@@ -18,6 +18,8 @@ class itemHold extends Model
             return $error['error'] = 'There is no \'DiseaseInfo => DiseaseType\'';
         }elseif (!isset($post['DiseaseInfo']['FoundTime'])) {
             return $error['error'] = 'There is no \'DiseaseInfo => FoundTime\'';
+        }elseif (!isset($post['DiseaseInfo']['DiseaseID'])) {
+            return $error['error'] = 'There is no \'DiseaseInfo => DiseaseID\'';
         }else{
             $database = $post['TunnelInfo']['TunnelID'];
             switch ($post['DiseaseInfo']['DiseaseType']) {
