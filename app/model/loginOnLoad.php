@@ -18,6 +18,10 @@ class loginOnLoad extends Model
     	foreach ($isCheckeds as $tunnel => $check) {
     		if ($database == $check->TunnelId) {
     			$returnCheck = $check->IsChecked;
+                if ($returnCheck == 0) {
+                    $where['TunnelID'] = $database;
+                    $this->theDatas->updateTheData('', 'authority', $where, '');
+                }
     		}
     	}
     	return $returnCheck;

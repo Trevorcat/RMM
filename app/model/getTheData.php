@@ -44,6 +44,11 @@ class getTheData extends Model
     	return $datas;
     }
 
+    public function updateTheData($database, $table, $wheres = '', $time = ''){
+        $databaseName = $this->databaseName($database);
+        DB::connection($databaseName)->update('update ' . $table . ' set IsChecked = 1 where OpenId = ? and TunnelId = ? ', [$wheres['OpenId'], $wheres['TunnelID']]);
+    }
+
     public function databaseName($tunnel_num){
         if ($tunnel_num == '') {
             $databaseName = 'mysql';
