@@ -16,8 +16,6 @@ class RegisterLoaded extends Controller
     public function tunnelInfo(Request $request){
         $post = $request->all();
 
-        var_dump($post);
-
         if (!isset($post['UserInfo']['openId'])) {
         	return $error['error'] = 'There is no \'UserInfo => openId\'';
         }else if (!isset($post['Authority']['TunnelID'])) {
