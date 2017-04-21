@@ -14,7 +14,6 @@ class registerLoaded extends Model
     public function tunnelInfo($post){
         $postData['OpenId'] = $post['UserInfo']['openId'];
         $tunnelInfo = $post['Authority']['TunnelID'];
-        var_dump($tunnelInfo);
         foreach ($tunnelInfo as $key => $value) {
             $tunnel[$key] = $value;
         }
