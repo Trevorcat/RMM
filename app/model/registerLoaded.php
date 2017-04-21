@@ -19,16 +19,16 @@ class registerLoaded extends Model
         }
         $info = NULL;
         foreach ($tunnel as $key => $value) {
-            $Database = $value;
-            $time = $key;
+            $time = 0;
             if ($info == NULL) {                
                 for ($count = 0; $count < count($tunnel); $count++) {
                     $nums = count($this->theDatas->getDataByTablenameAndDatabasename($value, 'tunnel_info', '', ''));
                     if ($count == 0) {
                         for ($infoTime = 0; $infoTime < $nums; $infoTime++) { 
-                            $info[$infoTime] = $this->theDatas->getDataByTablenameAndDatabasename($value, 'tunnel_info', '', '')[$infoTime];
+                            $info[$time] = $this->theDatas->getDataByTablenameAndDatabasename($value, 'tunnel_info', '', '')[$infoTime];
                             $where['TunnelId'] = $value;
-                            $info[$infoTime]->TunnelName = $this->theDatas->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '')[0]->TunnelName;
+                            $info[$time]->TunnelName = $this->theDatas->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '')[0]->TunnelName;
+                            $time++;
                         }
                     }
                 }
@@ -79,11 +79,10 @@ class registerLoaded extends Model
                                 $diseaseName = 'scratch_disease';
                                 break;
                         }
-                        $DiseaseIDs = $this->theDatas->getDataByTablenameAndDatabasename($Database, 'disease', 'FoundTime = ' . '\'' . $infoValue->ExaminationTime . '\'', '');
+                        $DiseaseIDs = $this->theDatas->getDataByTablenameAndDatabasename($tunnel[$infoKey], 'disease', 'FoundTime = ' . '\'' . $infoValue->ExaminationTime . '\'', '');
                         for($theSeverity = 0; $theSeverity <= 4; $theSeverity++){
                             $where['SeverityClassfication'] = $theSeverity;
-                            $where['DiseaseID'] = $DiseaseIDs;
-                            $theCount['CountOfLevel' . $theSeverity] = $this->theDatas->countTheDetails($Database, $diseaseName, $this->theDatas->countLevelWhere($where), $infoValue->ExaminationTime)[0]->count;
+                            $where['DiseaseID'] = $DiseaseIDs;                            $theCount['CountOfLevel' . $theSeverity] = $this->theDatas->countTheDetails( $tunnel[$infoKey], $diseaseName, $this->theDatas->countLevelWhere($where), $infoValue->ExaminationTime)[0]->count;
                         }
                     }else{
                         unset($theCount);
@@ -92,15 +91,15 @@ class registerLoaded extends Model
                     $where['FoundTime'] = $infoValue->ExaminationTime;
                     $where['DiseaseType'] = $type;
                     $where['Position'] = 0;         //CountOfSideLeft
-                    $theCount['CountOfSideLeft'] = $this->theDatas->countTheDetails($Database, 'disease', $where)[0]->count;
-                    $where['Position'] = 1;         //CountOfSideRight
-                    $theCount['CountOfSideRight'] = $this->theDatas->countTheDetails($Database, 'disease', $where)[0]->count;
+                    $theCount['CountOfSideLeft'] = $this->theDatas->countTheDetails($tunnel[$infoKey], 'disease', $where)[0]->count;
+                    $where['Position'] = 4;         //CountOfSideRight
+                    $theCount['CountOfSideRight'] = $this->theDatas->countTheDetails($tunnel[$infoKey], 'disease', $where)[0]->count;
                     $where['Position'] = 2;         //CountOfTop
-                    $theCount['CountOfTop'] = $this->theDatas->countTheDetails($Database, 'disease', $where)[0]->count;
+                    $theCount['CountOfTop'] = $this->theDatas->countTheDetails($tunnel[$infoKey], 'disease', $where)[0]->count;
                     $where['Position'] = 3;         //CountOfHanceRight
-                    $theCount['CountOfHanceRight'] = $this->theDatas->countTheDetails($Database, 'disease', $where)[0]->count;
-                    $where['Position'] = 4;         //CountOfHanceLeft
-                    $theCount['CountOfHanceLeft'] = $this->theDatas->countTheDetails($Database, 'disease', $where)[0]->count;
+                    $theCount['CountOfHanceRight'] = $this->theDatas->countTheDetails($tunnel[$infoKey], 'disease', $where)[0]->count;
+                    $where['Position'] = 1;         //CountOfHanceLeft
+                    $theCount['CountOfHanceLeft'] = $this->theDatas->countTheDetails($tunnel[$infoKey], 'disease', $where)[0]->count;
                     $infoValue->$countName = $theCount;
                 }
                 
