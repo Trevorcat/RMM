@@ -14,7 +14,6 @@ class getTheData extends Model
     public function countTheDetails($database, $table, $wheres = '', $time = ''){
         $databaseName = $this->databaseName($database);
         $tableName = $time == '' ? $table : $this->tableName($time, $table);
-
         if (is_string($wheres)) {
             $count = $wheres == '' ? 0 :DB::connection($databaseName)->select('select count(*) as count from ' . $tableName . ' where ' . $wheres);
         }else{

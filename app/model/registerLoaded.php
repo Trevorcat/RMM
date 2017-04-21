@@ -85,7 +85,9 @@ class registerLoaded extends Model
                         $DiseaseIDs = $this->theDatas->getDataByTablenameAndDatabasename($infoValue->TunnelID , 'disease', 'FoundTime = ' . '\'' . $infoValue->ExaminationTime . '\'', '');
                         for($theSeverity = 0; $theSeverity <= 4; $theSeverity++){
                             $where['SeverityClassfication'] = $theSeverity;
-                            $where['DiseaseID'] = $DiseaseIDs;                        
+                            $where['DiseaseID'] = $DiseaseIDs;                            if (empty($where['DiseaseID'])) {
+                                continue;
+                            }
                             $theCount['CountOfLevel' . $theSeverity] = $this->theDatas->countTheDetails( $infoValue->TunnelID, $diseaseName, $this->theDatas->countLevelWhere($where), $infoValue->ExaminationTime)[0]->count;
                         }
                     }else{
