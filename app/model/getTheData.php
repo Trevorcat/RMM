@@ -34,7 +34,7 @@ class getTheData extends Model
         $databaseName = $this->databaseName($database);
 
     	$tableName = $time == '' ? $table : $this->tableName($time, $table);
-                
+
         if (is_string($wheres)) {
              $datas = $wheres == '' ? DB::connection($databaseName)->select('select * from ' . $tableName) : DB::connection($databaseName)->select('select * from ' . $tableName . ' where ' . $wheres);
          }else{
