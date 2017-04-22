@@ -14,31 +14,31 @@ class itemHold extends Model
     public function getTheDetail($post){
         if (!isset($post['DiseaseInfo']['TunnelID'])) {
             return $error['error'] = 'There is no \'DiseaseInfo => TunnelID\'';
-        }elseif (!isset($post['DiseaseInfo']['FoundTime'])) {
-            return $error['error'] = 'There is no \'DiseaseInfo => FoundTime\'';
+        }elseif (!isset($post['DiseaseInfo']['ExaminationTime'])) {
+            return $error['error'] = 'There is no \'DiseaseInfo => ExaminationTime\'';
         }else{
             $database = $post['DiseaseInfo']['TunnelID'];
             for($Diseasetype = 0; $Diseasetype <= 4; $Diseasetype ++){
                 switch ($Diseasetype) {
                     case '0':                   //裂缝cracks
                         $type = 'crack_disease';
-                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['FoundTime']);
+                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['ExaminationTime']);
                         break;
                     case '1':                   //漏洞leaks
                         $type = 'leak_disease';
-                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['FoundTime']);
+                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['ExaminationTime']);
                         break;
                     case '2':                   //掉块drop
                         $type = 'drop_disease';
-                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['FoundTime']);
+                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['ExaminationTime']);
                         break;  
                     case '3':                   //划痕scratch
                         $type = 'scratch_disease';
-                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['FoundTime']);
+                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['ExaminationTime']);
                     break;
                     default:                    //异常exception
                         $type = 'exception_disease';
-                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['FoundTime']);
+                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['ExaminationTime']);
                         break;
                 }   
             
