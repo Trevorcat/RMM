@@ -29,6 +29,11 @@ class loginOnLoad extends Model
 
     public function getEvents($database){
     	$events = $this->theDatas->getDataByTablenameAndDatabasename($database, 'tunnel_info', '', '');
+
+        foreach ($events as $key => $value) {
+            $where['TunnelId'] = $database;
+            $value->PICsFilePath = $this->theDatas->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '')[0]->PICsFilePath;
+        }
     	return $events;
     }
 
