@@ -12,8 +12,8 @@ class itemHold extends Model
     }
 
     public function getTheDetail($post){
-        if (!isset($post['TunnelInfo']['TunnelID'])) {
-            return $error['error'] = 'There is no \'TunnelInfo => TunnelID\'';
+        if (!isset($post['DiseaseInfo']['TunnelID'])) {
+            return $error['error'] = 'There is no \'DiseaseInfo => TunnelID\'';
         }elseif (!isset($post['DiseaseInfo']['DiseaseType'])) {
             return $error['error'] = 'There is no \'DiseaseInfo => DiseaseType\'';
         }elseif (!isset($post['DiseaseInfo']['FoundTime'])) {
@@ -21,7 +21,7 @@ class itemHold extends Model
         }elseif (!isset($post['DiseaseInfo']['DiseaseID'])) {
             return $error['error'] = 'There is no \'DiseaseInfo => DiseaseID\'';
         }else{
-            $database = $post['TunnelInfo']['TunnelID'];
+            $database = $post['DiseaseInfo']['TunnelID'];
             switch ($post['DiseaseInfo']['DiseaseType']) {
                 case '0':                   //裂缝cracks
                         $type = 'crack_disease';
@@ -41,6 +41,9 @@ class itemHold extends Model
             }
             $where['DiseaseID'] = $post['DiseaseInfo']['DiseaseID'];
             $theDetail = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, $where, $post['DiseaseInfo']['FoundTime']);
+            if (count($theDetail) == 0) {
+                return $error['error'] = 'can not find anything';
+            }
             return $theDetail[0];
         }
     	
