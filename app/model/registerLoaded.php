@@ -9,7 +9,6 @@ class registerLoaded extends Model
     //
     public function __construct(){
     	$this->theDatas = new \App\model\getTheData();
-        $this->event = new \App\model\loginOnLoad();
     }
 
     public function tunnelInfo($post){
@@ -18,37 +17,6 @@ class registerLoaded extends Model
         
 
         foreach ($tunnelInfo as $tunnelNum => $tunnelId) {  //遍历所有的隧道
-
-            $databases[0] = $tunnelId;    //查询当前隧道存在的event
-            foreach ($databases as $databaseNum => $database) {
-                $events = $this->event->getEvents($database);
-                $isChecked = $this->event->getIsChecked($database, $post);
-                $tunnelName = $this->event->getTunnelName($database);
-                foreach ($events as $eventNum => $event) {
-                    $event->IsChecked = $isChecked;
-                    $event->DiseaseCount['CountofCrack'] = $event->CountofCrack;
-                    $event->DiseaseCount['CountofLeak'] = $event->CountofLeak;
-                    $event->DiseaseCount['CountofDrop'] = $event->CountofDrop;
-                    $event->DiseaseCount['CountofScratch'] = $event->CountofScratch;
-                    $event->DiseaseCount['CountofException'] = $event->CountofException;
-                    unset($event->CountofCrack);
-                    unset($event->CountofLeak);
-                    unset($event->CountofDrop);
-                    unset($event->CountofScratch);
-                    unset($event->CountofException);
-                    $eventInfo['TunnelPicURL'] = $event->PICsFilePath;
-                }
-                $eventInfo['TunnelName'] = $tunnelName;
-                $isDely = 0;
-                foreach ($events as $key => $value) {
-                    $nextTime = $key + 1 == count($events) ? strtotime(date("y-m-d")) : strtotime($events[$key + 1]->ExaminationTime);
-                    if (ceil(strtotime($value->ExaminationTime) - $nextTime) > 365) {
-                        $isDely = 1;
-                    }
-                    $value->IsDely = $isDely;
-                }
-                $eventInfo['Events'] = $events;
-            }
 
             $where['TunnelID'] = $tunnelId;
             $tunnels = $this->theDatas->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '')[0];
@@ -100,7 +68,7 @@ class registerLoaded extends Model
                                 }
                             }
                             unset($whereIn);
-                            $tunnels->CracksStatics = $CracksStatics;
+                            $tunnels->CracksStatics[$examinationTime] = $CracksStatics;
                             break;
                         
                         case 1:
@@ -146,7 +114,7 @@ class registerLoaded extends Model
                                 }
                             }
                             unset($whereIn);
-                            $tunnels->LeaksStatics = $LeaksStatics;
+                            $tunnels->LeaksStatics[$examinationTime] = $LeaksStatics;
                             break;
 
                         case 2:
@@ -192,7 +160,7 @@ class registerLoaded extends Model
                                 }
                             }
                             unset($whereIn);
-                            $tunnels->DropsStatics = $DropsStatics;
+                            $tunnels->DropsStatics[$examinationTime] = $DropsStatics;
                             break;
 
                         case 3:
@@ -238,7 +206,7 @@ class registerLoaded extends Model
                                 }
                             }
                             unset($whereIn);
-                            $tunnels->ScratchStatics = $ScratchStatics;
+                            $tunnels->ScratchStatics[$examinationTime] = $ScratchStatics;
                             break;
 
                         default:
@@ -278,22 +246,25 @@ class registerLoaded extends Model
                                 }
                             }
                             unset($whereIn);
-                            $tunnels->ExceptionStatics = $ExceptionStatics;
+                            $tunnels->ExceptionStatics[$examinationTime] = $ExceptionStatics;
                             break;
                     }
                 }
                 
-
-
+                unset($CracksStatics);
+                unset($LeaksStatics);
+                unset($DropsStatics);
+                unset($ScratchStatics);
+                unset($ExceptionStatics);
+                
                 $tunnels->ExaminationTime[$examinationTime] = $details->ExaminationTime;
                 $tunnels->severity[$examinationTime] = $details->Severity;
-                $tunnels->Events = $eventInfo['Events'];
             }
             unset($tunnelInfo[$tunnelNum]);
             $tunnelInfo[$tunnelNum] = $tunnels;
         } 
-        // var_dump($tunnelInfo);
-        return $tunnelInfo;
+        var_dump($tunnelInfo);
+        // return $tunnelInfo;
     }
     
 }
