@@ -263,8 +263,8 @@ class registerLoaded extends Model
             unset($tunnelInfo[$tunnelNum]);
             $tunnelInfo[$tunnelNum] = $tunnels;
         } 
-        var_dump($tunnelInfo);
-        // return $tunnelInfo;
+        // var_dump($tunnelInfo);
+        return $tunnelInfo;
     }
     
 }
