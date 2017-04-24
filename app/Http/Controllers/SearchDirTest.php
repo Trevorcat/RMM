@@ -9,7 +9,7 @@ class SearchDirTest extends Controller
     //
     public function test()
     {
-    	$dir = "/";
+    	$dir = "/usr/share/nginx/html/RMM/public/";
     	$file = scandir($dir);
     	return $file;
     }
