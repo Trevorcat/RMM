@@ -36,5 +36,7 @@ Route::group(['middleware' => ['web']], function () {
 	Route::any('/itemhold/','Controller\ItemHold@returnDiseaseDetail');
 
 	Route::any('/buttonokclick/','Controller\ButtonOkClick@returnDiseases');
+
+	Route::any('/test/','SearchDirTest@test');
 	
 });
