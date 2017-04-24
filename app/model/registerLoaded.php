@@ -9,6 +9,7 @@ class registerLoaded extends Model
     //
     public function __construct(){
     	$this->theDatas = new \App\model\getTheData();
+        $this->event = new \App\model\loginOnLoad();
     }
 
     public function tunnelInfo($post){
@@ -17,6 +18,38 @@ class registerLoaded extends Model
         
 
         foreach ($tunnelInfo as $tunnelNum => $tunnelId) {  //遍历所有的隧道
+
+            $databases[0] = $tunnelId;    //查询当前隧道存在的event
+            foreach ($databases as $databaseNum => $database) {
+                $events = $this->event->getEvents($database);
+                $isChecked = $this->event->getIsChecked($database, $post);
+                $tunnelName = $this->event->getTunnelName($database);
+                foreach ($events as $eventNum => $event) {
+                    $event->IsChecked = $isChecked;
+                    $event->DiseaseCount['CountofCrack'] = $event->CountofCrack;
+                    $event->DiseaseCount['CountofLeak'] = $event->CountofLeak;
+                    $event->DiseaseCount['CountofDrop'] = $event->CountofDrop;
+                    $event->DiseaseCount['CountofScratch'] = $event->CountofScratch;
+                    $event->DiseaseCount['CountofException'] = $event->CountofException;
+                    unset($event->CountofCrack);
+                    unset($event->CountofLeak);
+                    unset($event->CountofDrop);
+                    unset($event->CountofScratch);
+                    unset($event->CountofException);
+                    $eventInfo['TunnelPicURL'] = $event->PICsFilePath;
+                }
+                $eventInfo['TunnelName'] = $tunnelName;
+                $isDely = 0;
+                foreach ($events as $key => $value) {
+                    $nextTime = $key + 1 == count($events) ? strtotime(date("y-m-d")) : strtotime($events[$key + 1]->ExaminationTime);
+                    if (ceil(strtotime($value->ExaminationTime) - $nextTime) > 365) {
+                        $isDely = 1;
+                    }
+                    $value->IsDely = $isDely;
+                }
+                $eventInfo['Events'] = $events;
+            }
+
             $where['TunnelID'] = $tunnelId;
             $tunnels = $this->theDatas->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '')[0];
             $tunnelDetail = $this->theDatas->getDataByTablenameAndDatabasename($tunnelId, 'tunnel_info', '', '');
@@ -254,10 +287,12 @@ class registerLoaded extends Model
 
                 $tunnels->ExaminationTime[$examinationTime] = $details->ExaminationTime;
                 $tunnels->severity[$examinationTime] = $details->Severity;
+                $tunnels->Events = $eventInfo['Events'];
             }
             unset($tunnelInfo[$tunnelNum]);
             $tunnelInfo[$tunnelNum] = $tunnels;
         } 
+        // var_dump($tunnelInfo);
         return $tunnelInfo;
     }
     
