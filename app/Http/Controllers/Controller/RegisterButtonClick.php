@@ -15,7 +15,7 @@ class RegisterButtonClick extends Controller
     }
 
     public function authority(Request $request){
-        $post = $request->all();
+        $post = $request->json()->all();
         if (!isset($post['UserInfo']['openId'])) {
             return $error['error'] = 'There is no \'UserInfo => openId\'';
         }else if (!isset($post['InviteCode'])) {

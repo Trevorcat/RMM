@@ -14,7 +14,7 @@ class ItemClick extends Controller
     }
 
     public function returnDiseaseInfo(Request $request){
-        $post = $request->all();
+        $post = $request->json()->all();
         if (!isset($post['TunnelId'])) {
             return $error['error'] = 'There is no \'TunnelId\' in POST';
         }

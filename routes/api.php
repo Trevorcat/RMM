@@ -19,23 +19,50 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['web']], function () {
 
-	Route::any('/apponload/','Controller\AppOnLoad@getAuthority');
+	Route::get('/apponload/',function(){
+		return 'The API can not use the GET method';
+	});
+	Route::post('/apponload/','Controller\AppOnLoad@getAuthority');
 
-	Route::any('/registerloaded/','Controller\RegisterLoaded@tunnelInfo');
+	Route::get('/registerloaded/',function(){
+		return 'The API can not use the GET method';
+	});
+	Route::post('/registerloaded/','Controller\RegisterLoaded@tunnelInfo');
 
-	Route::any('/loginloaded/','Controller\RegisterLoaded@tunnelInfo');
+	Route::get('/loginloaded/',function(){
+		return 'The API can not use the GET method';
+	});
+	Route::post('/loginloaded/','Controller\RegisterLoaded@tunnelInfo');
 
-	Route::any('/registerbuttonclick/','Controller\RegisterButtonClick@authority');
+	Route::get('/registerbuttonclick/',function(){
+		return 'The API can not use the GET method';
+	});
+	Route::post('/registerbuttonclick/','Controller\RegisterButtonClick@authority');
 
-	Route::any('/itemclick/','Controller\ItemClick@returnDiseaseInfo');
+	Route::get('/itemclick/',function(){
+		return 'The API can not use the GET method';
+	});
+	Route::post('/itemclick/','Controller\ItemClick@returnDiseaseInfo');
 
-	Route::any('/loginonload/','Controller\LoginOnLoad@returnEventInfo');
+	Route::get('/loginonload/',function(){
+		return 'The API can not use the GET method';
+	});
+	Route::post('/loginonload/','Controller\LoginOnLoad@returnEventInfo');
 
-	Route::any('/scanslided/','Controller\ScanSlided@returnDisease');
+	Route::get('/scanslided/',function(){
+		return 'The API can not use the GET method';
+	});
+	Route::post('/scanslided/','Controller\ScanSlided@returnDisease');
 
-	Route::any('/itemhold/','Controller\ItemHold@returnDiseaseDetail');
+	Route::get('/itemhold/',function(){
+		return 'The API can not use the GET method';
+	});
+	Route::post('/itemhold/','Controller\ItemHold@returnDiseaseDetail');
 
-	Route::any('/buttonokclick/','Controller\ButtonOkClick@returnDiseases');
+	Route::get('/buttonokclick/',function(){
+		return 'The API can not use the GET method';
+	});
+	Route::post('/buttonokclick/','Controller\ButtonOkClick@returnDiseases');
 
 	Route::any('/test/','SearchDirTest@test');
 	

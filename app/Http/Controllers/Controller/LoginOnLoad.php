@@ -14,7 +14,7 @@ class LoginOnLoad extends Controller
     }
 
     public function returnEventInfo(Request $request){
-    	$post = $request->all();
+    	$post = $request->json()->all();
         if (!isset($post['Authority']['TunnelID'])) {
             return $error['error'] = 'There is no \'Authority => TunnelID\''; 
         }else if (!isset($post['UserInfo']['openId'])) {

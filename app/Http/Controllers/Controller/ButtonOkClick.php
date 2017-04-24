@@ -14,7 +14,7 @@ class ButtonOkClick extends Controller
     }
 
     public function returnDiseases(Request $request){
-    	$post = $request->all();
+    	$post = $request->json()->all();
         if (isset($post['TunnelInfo']['TunnelID'])) {
             return $error['error'] = 'There\'s no \'TunnelInfo => TunnelID\' in POST';
         }else if(isset($post['StartMileage'])){

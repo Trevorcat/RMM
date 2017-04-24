@@ -14,7 +14,7 @@ class ItemHold extends Controller
     }
 
     public function returnDiseaseDetail(Request $request){
-    	$post = $request->all();
+    	$post = $request->json()->all();
     	$diseaseDetail['DiseaseDetail'] = $this->itemhold->getTheDetail($post);
     	return $diseaseDetail;
     }
