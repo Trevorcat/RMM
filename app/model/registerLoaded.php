@@ -67,8 +67,10 @@ class registerLoaded extends Model
                                         break;
                                 }
                             }
+                            unset($whereIn['Position']);
+                            $CracksStatics['CountOfAll'] = $this->theDatas->countTheDetails($tunnelId, 'disease', $whereIn, '')[0]->count ;
                             unset($whereIn);
-                            $tunnels->CracksStatics[$examinationTime] = $CracksStatics;
+                            $tunnels->CracksStatic[$examinationTime] = $CracksStatics;
                             break;
                         
                         case 1:
@@ -113,8 +115,10 @@ class registerLoaded extends Model
                                         break;
                                 }
                             }
+                            unset($whereIn['Position']);
+                            $LeaksStatics['CountOfAll'] = $this->theDatas->countTheDetails($tunnelId, 'disease', $whereIn, '')[0]->count ;
                             unset($whereIn);
-                            $tunnels->LeaksStatics[$examinationTime] = $LeaksStatics;
+                            $tunnels->LeaksStatic[$examinationTime] = $LeaksStatics;
                             break;
 
                         case 2:
@@ -159,8 +163,10 @@ class registerLoaded extends Model
                                         break;
                                 }
                             }
+                            unset($whereIn['Position']);
+                            $DropsStatics['CountOfAll'] = $this->theDatas->countTheDetails($tunnelId, 'disease', $whereIn, '')[0]->count ;
                             unset($whereIn);
-                            $tunnels->DropsStatics[$examinationTime] = $DropsStatics;
+                            $tunnels->DropsStatic[$examinationTime] = $DropsStatics;
                             break;
 
                         case 3:
@@ -205,8 +211,10 @@ class registerLoaded extends Model
                                         break;
                                 }
                             }
+                            unset($whereIn['Position']);
+                            $ScratchStatics['CountOfAll'] = $this->theDatas->countTheDetails($tunnelId, 'disease', $whereIn, '')[0]->count ;
                             unset($whereIn);
-                            $tunnels->ScratchStatics[$examinationTime] = $ScratchStatics;
+                            $tunnels->ScratchStatic[$examinationTime] = $ScratchStatics;
                             break;
 
                         default:
@@ -245,8 +253,11 @@ class registerLoaded extends Model
                                         break;
                                 }
                             }
+                            unset($whereIn['Position']);
+                            $ExceptionStatics['CountOfAll'] = $this->theDatas->countTheDetails($tunnelId, 'disease', $whereIn, '')[0]->count ;
                             unset($whereIn);
-                            $tunnels->ExceptionStatics[$examinationTime] = $ExceptionStatics;
+
+                            $tunnels->ExceptionStatic[$examinationTime] = $ExceptionStatics;
                             break;
                     }
                 }
@@ -256,7 +267,7 @@ class registerLoaded extends Model
                 unset($DropsStatics);
                 unset($ScratchStatics);
                 unset($ExceptionStatics);
-                
+
                 $tunnels->ExaminationTime[$examinationTime] = $details->ExaminationTime;
                 $tunnels->severity[$examinationTime] = $details->Severity;
             }
