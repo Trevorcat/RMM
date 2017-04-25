@@ -47,7 +47,6 @@ class ItemClick extends Controller
             unset($detail[0]->PNGFile);
     		$theDiseaseInfo[$diseaseNum]->Info = $detail[0];
     	}
-        var_dump($theDiseaseInfo);
         $theDiseaseInfo['StartMileage'] = $this->itemclick->getTheStartMileage($database);
     	$TheDiseaseInfo['DiseasesInfo'] = $theDiseaseInfo;
         return $TheDiseaseInfo;
