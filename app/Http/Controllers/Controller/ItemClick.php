@@ -39,10 +39,17 @@ class ItemClick extends Controller
     				break;
     		}
     		$detail = $this->getDiseaseDetail($database, $type, $disease->FoundTime, $disease->DiseaseID);
-    		$theDiseaseInfo[$diseaseNum]->DiseaseInfo = $detail[0];
+            $detail[0]->DiseasePostion['Mileage'] = $theDiseaseInfo[$diseaseNum]->Mileage;
+            $detail[0]->DiseasePostion['Position'] = $theDiseaseInfo[$diseaseNum]->Position;
+            unset($theDiseaseInfo[$diseaseNum]->Mileage);
+            unset($theDiseaseInfo[$diseaseNum]->Position);
+            $theDiseaseInfo[$diseaseNum]->PNGURL = $detail[0]->PNGFile;
+            unset($detail[0]->PNGFile);
+    		$theDiseaseInfo[$diseaseNum]->Info = $detail[0];
     	}
+        var_dump($theDiseaseInfo);
         $theDiseaseInfo['StartMileage'] = $this->itemclick->getTheStartMileage($database);
-    	$TheDiseaseInfo['DiseaseInfo'] = $theDiseaseInfo;
+    	$TheDiseaseInfo['DiseasesInfo'] = $theDiseaseInfo;
         return $TheDiseaseInfo;
     }
 
