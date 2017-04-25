@@ -17,7 +17,7 @@ class itemHold extends Model
         }elseif (!isset($post['DiseaseInfo']['ExaminationTime'])) {
             return $error['error'] = 'There is no \'DiseaseInfo => ExaminationTime\'';
         }else{
-            $database = $post['DiseaseInfo']['TunnelID'];
+            $database = $post['DiseaseInfo']['TunnelId'];
             for($Diseasetype = 0; $Diseasetype <= 4; $Diseasetype ++){
                 switch ($Diseasetype) {
                     case '0':                   //裂缝cracks
