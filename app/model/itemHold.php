@@ -12,8 +12,8 @@ class itemHold extends Model
     }
 
     public function getTheDetail($post){
-        if (!isset($post['DiseaseInfo']['TunnelID'])) {
-            return $error['error'] = 'There is no \'DiseaseInfo => TunnelID\'';
+        if (!isset($post['DiseaseInfo']['TunnelId'])) {
+            return $error['error'] = 'There is no \'DiseaseInfo => TunnelId\'';
         }elseif (!isset($post['DiseaseInfo']['ExaminationTime'])) {
             return $error['error'] = 'There is no \'DiseaseInfo => ExaminationTime\'';
         }else{
