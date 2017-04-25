@@ -15,10 +15,10 @@ class ItemClick extends Controller
 
     public function returnDiseaseInfo(Request $request){
         $post = $request->json()->all();
-        if (!isset($post['TunnelId'])) {
+        if (!isset($post['TunnelInfo']['TunnelId'])) {
             return $error['error'] = 'There is no \'TunnelId\' in POST';
         }
-    	$database = $post['TunnelId'];
+    	$database = $post['TunnelInfo']['TunnelId'];
     	$theDiseaseInfo = $this->diseaseInfo($database);
     	foreach ($theDiseaseInfo as $diseaseNum => $disease) {
     		switch ($disease->DiseaseType) {
