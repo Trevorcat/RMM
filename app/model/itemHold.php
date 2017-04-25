@@ -18,42 +18,48 @@ class itemHold extends Model
             return $error['error'] = 'There is no \'DiseaseInfo => ExaminationTime\'';
         }else{
             $database = $post['DiseaseInfo']['TunnelId'];
-            for($Diseasetype = 0; $Diseasetype <= 4; $Diseasetype ++){
-                switch ($Diseasetype) {
-                    case '0':                   //裂缝cracks
-                        $type = 'crack_disease';
-                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['ExaminationTime']);
+            $ExaminationTime = $post['DiseaseInfo']['ExaminationTime'];
+            foreach ($ExaminationTime as $time => $examination) {
+                for($Diseasetype = 0; $Diseasetype <= 4; $Diseasetype ++){
+                    switch ($Diseasetype) {
+                        case '0':                   //裂缝cracks
+                            $type = 'crack_disease';
+                            $theDetail[$time][$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $examination);
+                            break;
+                        case '1':                   //漏洞leaks
+                            $type = 'leak_disease';
+                            $theDetail[$time][$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $examination);
+                            break;
+                        case '2':                   //掉块drop
+                            $type = 'drop_disease';
+                            $theDetail[$time][$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $examination);
+                            break;  
+                        case '3':                   //划痕scratch
+                            $type = 'scratch_disease';
+                            $theDetail[$time][$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $examination);
                         break;
-                    case '1':                   //漏洞leaks
-                        $type = 'leak_disease';
-                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['ExaminationTime']);
-                        break;
-                    case '2':                   //掉块drop
-                        $type = 'drop_disease';
-                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['ExaminationTime']);
-                        break;  
-                    case '3':                   //划痕scratch
-                        $type = 'scratch_disease';
-                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['ExaminationTime']);
-                    break;
-                    default:                    //异常exception
-                        $type = 'exception_disease';
-                        $theDetail[$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $post['DiseaseInfo']['ExaminationTime']);
-                        break;
-                }   
-            
+                        default:                    //异常exception
+                            $type = 'exception_disease';
+                            $theDetail[$time][$Diseasetype] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, '', $examination);
+                            break;
+                    }   
+                
+                }
             }
             $time = 0;
             foreach ($theDetail as $Diseasestype => $Diseases) {
-                foreach ($Diseases as $key => $value) {
-                    $theDetails[$time] = $value;
-                    $time++;
+                foreach ($Diseases as $Diseasetype => $disease) {
+                    foreach ($disease as $key => $value) {
+                        $theDetails[$time] = $value;
+                        $time++;
+                    }
                 }
             }
             if (count($theDetails) == 0) {
                 return $error['error'] = 'can not find anything';
             }
-            return $theDetail;
+            // var_dump($theDetails);
+            return $theDetails;
         }
     	
     }
