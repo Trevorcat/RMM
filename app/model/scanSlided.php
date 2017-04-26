@@ -15,7 +15,7 @@ class scanSlided extends Model
        	$database = $post['TunnelInfo']['TunnelID'];
     	$where['col'] = 'Mileage';
     	$where['start'] = $post['Mileage'];
-    	$where['range'] = 1000;
+    	$where['range'] = 60;
     	$whereCol['FoundTime'] = $post['TunnelInfo']['ExaminationTime'];
     	$theDisease['DiseasesInfo'] = $this->theDatas->rangeSearch($database, 'disease', $where, '', $whereCol);
     	$theDisease['StartMileage'] = $theDisease['DiseasesInfo'][0]->DiseaseID;
