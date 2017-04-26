@@ -127,7 +127,8 @@ class getTheData extends Model
             }
         }
 
-        $wheres = $whereCol == '' ? $setTheRange : $setTheRange . ' and ' . $this->where($whereCol) ;        $range = $wheres == '' ? 0 :DB::connection($databaseName)->select('select * from ' . $tableName . ' where ' . $wheres);
+        $wheres = $whereCol == '' ? $setTheRange : $setTheRange . ' and ' . $this->where($whereCol) ;
+        $range = $wheres == '' ? 0 :DB::connection($databaseName)->select('select * from ' . $tableName . ' where ' . $wheres);
         return $range;
     }
 

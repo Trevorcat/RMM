@@ -27,7 +27,7 @@ class itemClick extends Model
             $detail = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, $where, $time);
         }else{
             $where['start'] = $start->Mileage;
-            $where['range'] = $start->Mileage + 60;
+            $where['range'] = $start->Mileage + 40;
             $where['col'] = 'Mileage';
             $detail = $this->theDatas->rangeSearch($database, $type, $where, $time, '');
         }

@@ -13,6 +13,7 @@ class buttonOkClick extends Model
 
     public function getTheDisease($post){
     	$database = $post['TunnelInfo']['TunnelId'];
+        $diseases = NULL;
     	foreach ($post['Filter'] as $type => $choose) {
     		if ($choose['Select'] == 1 && $type != 'Scratch' && $type != 'Exception') {
     			foreach ($choose as $chooseType => $range) {
@@ -22,19 +23,23 @@ class buttonOkClick extends Model
                         }
     				}
     			}
-    			
     			$diseaseSelected = $this->theDatas->rangeSearchForOkClick($database, strtolower($type).'_disease', $where, $post['TunnelInfo']['ExaminationTime'], '');
     			unset($where);
+                $selectDiseaseNum = 0;
     			foreach ($diseaseSelected as $diseaseNum => $diseaseValue) {    				
                     $where['DiseaseID'] = $diseaseValue->DiseaseID;
-    				$disease[$type][$diseaseNum] = $this->theDatas->getDataByTablenameAndDatabasename($database, strtolower($type) . '_disease', $where, $post['TunnelInfo']['ExaminationTime'])[0];
+    				$disease[$type][$diseaseNum] = $this->theDatas->getDataByTablenameAndDatabasename($database, 'disease', $where, '')[0];
                     unset($where);
+                    if ($disease[$type][$diseaseNum]->Mileage > $post['EndMileage'] || $disease[$type][$diseaseNum]->Mileage < $post['StartMileage']) {
+                        continue;
+                    }
+                    $diseases[$type][$selectDiseaseNum] = $diseaseValue;
+                    $selectDiseaseNum ++;
     			}
     			
     		}	
     	}
-        
-    	$diseaseInfo['DiseaseInfo'] = isset($disease) ? $disease : 'Nothing been searched by the select';
+    	$diseaseInfo['DiseaseInfo'] = isset($diseases) ? $diseases : 'Nothing been searched by the select';
     	return $diseaseInfo;
     }
 }
