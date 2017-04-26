@@ -44,7 +44,8 @@ class buttonOkClick extends Model
     			$whereCol['FoundTime'] = $post['TunnelInfo']['ExaminationTime'];
     			$diseaseSelected = $this->theDatas->rangeSearch($database, 'disease', $where, '', $whereCol);
     			unset($where);
-    			foreach ($diseaseSelected as $diseaseNum => $diseaseValue) {    				$where['DiseaseID'] = $diseaseValue->DiseaseID;
+    			foreach ($diseaseSelected as $diseaseNum => $diseaseValue) {    				
+                    $where['DiseaseID'] = $diseaseValue->DiseaseID;
     				$disease[$type][$diseaseNum] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type . '_disease', $where, $post['TunnelInfo']['ExaminationTime'])[0];
     			}
     			

@@ -11,16 +11,27 @@ class itemClick extends Model
     	$this->theDatas = new \App\model\getTheData();
     }
 
-    public function getDiseaseInfo($database)
+    public function getDiseaseInfo($database, $start)
     {
-    	$data = $this->theDatas->getDataByTablenameAndDatabasename($database, 'disease', '', '');
-        
+        $where['start'] = $start->Mileage;
+        $where['range'] = 60;
+        $where['col'] = 'Mileage';
+    	$data = $this->theDatas->rangeSearch($database, 'disease', $where, '');
     	return $data;
     }
 
-    public function getDiseaseDetail($database, $type, $time, $diseaseId){
-    	$where['DiseaseId'] = $diseaseId;
-    	$detail = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, $where, $time);
+    public function getDiseaseDetail($database, $type, $time, $diseaseId, $start = ''){
+
+        if ($start == '') {
+            $where['DiseaseId'] = $diseaseId;
+            $detail = $this->theDatas->getDataByTablenameAndDatabasename($database, $type, $where, $time);
+        }else{
+            $where['start'] = $start->Mileage;
+            $where['range'] = $start->Mileage + 60;
+            $where['col'] = 'Mileage';
+            $detail = $this->theDatas->rangeSearch($database, $type, $where, $time, '');
+        }
+         
     	return $detail;
 
     }
@@ -29,6 +40,6 @@ class itemClick extends Model
         $data = $this->theDatas->theMinOfCol($database, 'disease', 'Mileage', '');
         $where['Mileage'] = $data[0]->min;
         $startDiseaseId = $this->theDatas->getDataByTablenameAndDatabasename($database, 'disease', $where, '');
-        return $startDiseaseId[0]->DiseaseID;
+        return $startDiseaseId[0];
     }
 }

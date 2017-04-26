@@ -19,7 +19,10 @@ class ItemClick extends Controller
             return $error['error'] = 'There is no \'TunnelId\' in POST';
         }
     	$database = $post['TunnelInfo']['TunnelId'];
-    	$theDiseaseInfo = $this->diseaseInfo($database);
+
+        
+
+    	$theDiseaseInfo = $this->diseaseInfo($database, $this->itemclick->getTheStartMileage($database));
     	foreach ($theDiseaseInfo as $diseaseNum => $disease) {
     		switch ($disease->DiseaseType) {
     			case '0':					//裂缝cracks
@@ -38,7 +41,7 @@ class ItemClick extends Controller
     				$type = 'exception_disease';
     				break;
     		}
-    		$detail = $this->getDiseaseDetail($database, $type, $disease->FoundTime, $disease->DiseaseID);
+    		$detail = $this->getDiseaseDetail($database, $type, $disease->FoundTime, $disease->DiseaseID, $this->itemclick->getTheStartMileage($database));
             $detail[0]->DiseasePostion['Mileage'] = $theDiseaseInfo[$diseaseNum]->Mileage;
             $detail[0]->DiseasePostion['Position'] = $theDiseaseInfo[$diseaseNum]->Position;
             unset($theDiseaseInfo[$diseaseNum]->Mileage);
@@ -47,13 +50,13 @@ class ItemClick extends Controller
             unset($detail[0]->PNGFile);
     		$theDiseaseInfo[$diseaseNum]->Info = $detail[0];
     	}
-        $theDiseaseInfo['StartMileage'] = $this->itemclick->getTheStartMileage($database);
+        $theDiseaseInfo['StartMileage'] = $this->itemclick->getTheStartMileage($database)->DiseaseID;
     	$TheDiseaseInfo['DiseasesInfo'] = $theDiseaseInfo;
         return $TheDiseaseInfo;
     }
 
-    public function diseaseInfo($database){
-    	$diseaseInfo = $this->itemclick->getDiseaseInfo($database);
+    public function diseaseInfo($database, $start){
+    	$diseaseInfo = $this->itemclick->getDiseaseInfo($database, $start);
     	return $diseaseInfo;
     }
 
