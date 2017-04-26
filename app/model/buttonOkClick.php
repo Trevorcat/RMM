@@ -12,46 +12,29 @@ class buttonOkClick extends Model
     }
 
     public function getTheDisease($post){
-    	$database = $post['TunnelInfo']['TunnelID'];
+    	$database = $post['TunnelInfo']['TunnelId'];
     	foreach ($post['Filter'] as $type => $choose) {
-    		if ($choose['select'] == 1) {
-    			foreach ($choose as $key => $value) {
-    				if ($key != 'select') {
-    					$where[$key] = $value;
+    		if ($choose['Select'] == 1 && $type != 'Scratch' && $type != 'Exception') {
+    			foreach ($choose as $chooseType => $range) {
+    				if ($chooseType != 'Select') {
+    					foreach ($range as $name => $value) {
+                            $where[$type . $name] = $value;
+                        }
     				}
     			}
-    			$where['start'] = $post['StartMileage'];
-    			$where['range'] = $post['EndMileage'] - $post['StartMileage'];
-    			$where['col'] = 'Mileage';
-    			switch ($type) {
-    				case 'Crack':					//裂缝cracks
-	    				$DiseaseType = 0;
-	    				break;
-	    			case 'Leak':					//漏洞leaks
-	    				$DiseaseType = 1;
-	    				break;
-	    			case 'Drop':					//掉块drop
-	    				$DiseaseType = 2;
-	    				break;	
-	    			case 'Scratch':					//划痕scratch
-	    				$DiseaseType = 3;
-	    			break;
-	    			default:					//异常exception
-	    				$DiseaseType = 4;
-	    				break;
-    			}
-    			$whereCol['DiseaseType'] = $DiseaseType;
-    			$whereCol['FoundTime'] = $post['TunnelInfo']['ExaminationTime'];
-    			$diseaseSelected = $this->theDatas->rangeSearch($database, 'disease', $where, '', $whereCol);
+    			
+    			$diseaseSelected = $this->theDatas->rangeSearchForOkClick($database, strtolower($type).'_disease', $where, $post['TunnelInfo']['ExaminationTime'], '');
     			unset($where);
     			foreach ($diseaseSelected as $diseaseNum => $diseaseValue) {    				
                     $where['DiseaseID'] = $diseaseValue->DiseaseID;
-    				$disease[$type][$diseaseNum] = $this->theDatas->getDataByTablenameAndDatabasename($database, $type . '_disease', $where, $post['TunnelInfo']['ExaminationTime'])[0];
+    				$disease[$type][$diseaseNum] = $this->theDatas->getDataByTablenameAndDatabasename($database, strtolower($type) . '_disease', $where, $post['TunnelInfo']['ExaminationTime'])[0];
+                    unset($where);
     			}
     			
     		}	
     	}
-    	$diseaseInfo['DiseaseInfo'] = $disease;
+        
+    	$diseaseInfo['DiseaseInfo'] = isset($disease) ? $disease : 'Nothing been searched by the select';
     	return $diseaseInfo;
     }
 }
