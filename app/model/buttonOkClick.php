@@ -14,7 +14,7 @@ class buttonOkClick extends Model
     public function getTheDisease($post){
     	$database = $post['TunnelInfo']['TunnelID'];
     	foreach ($post['Filter'] as $type => $choose) {
-    		if ($choose['select'] = 1) {
+    		if ($choose['select'] == 1) {
     			foreach ($choose as $key => $value) {
     				if ($key != 'select') {
     					$where[$key] = $value;

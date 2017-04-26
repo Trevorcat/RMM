@@ -21,6 +21,8 @@ class ButtonOkClick extends Controller
             return $error['error'] = 'There\'s no \'StartMileage\' in POST';
         }else if (isset($post['EndMileage'])) {
             return $error['error'] = 'There\'s no \'EndMileage\' in POST';
+        }else if (isset($post['Filter'])) {
+            return $error['error'] = 'There\'s no \'Filter\' in POST';
         }else{
             $theDisease['DiseasesInfo'] = $this->buttonOkClick->getTheDisease($post);
             // var_dump($theDisease);
