@@ -17,9 +17,11 @@ class RegisterButtonClick extends Controller
     public function authority(Request $request){
         $post = $request->json()->all();
         if (!isset($post['UserInfo']['openId'])) {
-            return $error['error'] = 'There is no \'UserInfo => openId\'';
+            $error['error'] = 1;
+            return $error['reason'] = 'There is no \'UserInfo => openId\'';
         }else if (!isset($post['InviteCode'])) {
-            return $error['error'] = 'There is no \'InviteCode\'';
+            $error['error'] = 1;
+            return $error['reason'] = 'There is no \'InviteCode\'';
         }
     	$company = $this->getCompanyName($request);
     	$confirm = $this->confirmInviteCode($request);

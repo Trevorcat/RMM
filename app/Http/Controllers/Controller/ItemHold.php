@@ -15,7 +15,15 @@ class ItemHold extends Controller
 
     public function returnDiseaseDetail(Request $request){
     	$post = $request->json()->all();
-    	$diseaseDetail['DiseaseDetail'] = $this->itemhold->getTheDetail($post);
+        if (!isset($post['DiseaseInfo']['TunnelId'])) {
+            $error['error'] = 1;
+            return $error['reason'] = 'There is no \'DiseaseInfo => TunnelId\'';
+        }else if (!isset($post['DiseaseInfo']['ExaminationTime'])) {
+            $error['error'] = 1;
+            return $error['reason'] = 'There is no \'DiseaseInfo => ExaminationTime\'';
+        }else{
+            $diseaseDetail['DiseaseDetail'] = $this->itemhold->getTheDetail($post);
+        }
     	return $diseaseDetail;
     }
 }

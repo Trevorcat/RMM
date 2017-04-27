@@ -17,11 +17,14 @@ class ScanSlided extends Controller
     public function returnDisease(Request $request){
     	$post = $request->json()->all();
         if (!isset($post['TunnelInfo']['TunnelId'])) {
-            return $error['error'] = 'There is no \'TunnelInfo => TunnelId\'';
+            $error['error'] = 1;
+            return $error['reason'] = 'There is no \'TunnelInfo => TunnelId\'';
         }else if (!isset($post['Mileage'])) {
-            return $error['error'] = 'There is no \'Mileage\'';
+            $error['error'] = 1;
+            return $error['reason'] = 'There is no \'Mileage\'';
         }else if (!isset($post['TunnelInfo']['ExaminationTime'])) {
-            return $error['error'] = 'There is no \'TunnelInfo => ExaminationTime\'';
+            $error['error'] = 1;
+            return $error['reason'] = 'There is no \'TunnelInfo => ExaminationTime\'';
         }else{
             $theDiseases = $this->scanslided->searchTheDisease($post);
             return $theDiseases;

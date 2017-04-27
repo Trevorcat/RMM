@@ -16,13 +16,17 @@ class ButtonOkClick extends Controller
     public function returnDiseases(Request $request){
     	$post = $request->json()->all();
         if (!isset($post['TunnelInfo']['TunnelId'])) {
-            return $error['error'] = 'There\'s no \'TunnelInfo => TunnelID\' in POST';
+            $error['error'] = 1;
+            return $error['reason'] = 'There\'s no \'TunnelInfo => TunnelID\' in POST';
         }else if(!isset($post['StartMileage'])){
-            return $error['error'] = 'There\'s no \'StartMileage\' in POST';
+            $error['error'] = 1;
+            return $error['reason'] = 'There\'s no \'StartMileage\' in POST';
         }else if (!isset($post['EndMileage'])) {
-            return $error['error'] = 'There\'s no \'EndMileage\' in POST';
+            $error['error'] = 1;
+            return $error['reason'] = 'There\'s no \'EndMileage\' in POST';
         }else if (!isset($post['Filter'])) {
-            return $error['error'] = 'There\'s no \'Filter\' in POST';
+            $error['error'] = 1;
+            return $error['reason'] = 'There\'s no \'Filter\' in POST';
         }else{
             $theDisease['DiseasesInfo'] = $this->buttonOkClick->getTheDisease($post);
             // var_dump($theDisease);
