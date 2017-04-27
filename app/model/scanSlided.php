@@ -18,7 +18,7 @@ class scanSlided extends Model
     	$where['range'] = 20;
         foreach ($post['TunnelInfo']['ExaminationTime'] as $key => $value) {
             $whereCol['FoundTime'] = $value;
-            $theDiseases = $this->theDatas->rangeSearch($database, 'disease', $where, '', $whereCol);
+            $theDiseases[$key] = $this->theDatas->rangeSearch($database, 'disease', $where, '', $whereCol);
         }
         $resoultNum = 0;
         $resoult = NULL;
@@ -27,8 +27,9 @@ class scanSlided extends Model
         }
     	
     	$theDisease['DiseasesInfo'] = $resoult;
-    	$theDisease['StartMileage'] = $theDisease['DiseasesInfo'] == NULL ? $post['Mileage'] : $theDisease['DiseasesInfo'][0]->DiseaseID;
-    	$theDisease['EndMileage'] = $theDisease['DiseasesInfo'] == NULL ? $post['Mileage'] + 20 : $theDisease['DiseasesInfo'][count($theDisease['DiseasesInfo'])-1]->DiseaseID;
+    	$theDisease['StartMileage'] = $theDisease['DiseasesInfo'] == NULL ? $post['Mileage'] : $theDisease['DiseasesInfo'][0]->Mileage;
+    	$theDisease['EndMileage'] = $theDisease['DiseasesInfo'] == NULL ? $post['Mileage'] + 20 : $theDisease['DiseasesInfo'][count($theDisease['DiseasesInfo'])-1]->Mileage;
     	return $theDisease;
+        
     }
 }
