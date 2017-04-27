@@ -30,6 +30,14 @@ class getTheData extends Model
         return $min;
     }
 
+    public function theMaxOfCol($database, $table, $col = '', $time = ''){
+        $databaseName = $this->databaseName($database);
+        $tableName = $time == '' ? $table : $this->tableName($time, $table);
+
+        $max = $col == '' ? 0 :DB::connection($databaseName)->select('select max(' . $col . ') as max from ' . $tableName );
+        return $max;
+    }
+
     public function getDataByTablenameAndDatabasename($database, $table, $wheres = '', $time = ''){
         $databaseName = $this->databaseName($database);
 
