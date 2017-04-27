@@ -64,14 +64,17 @@ class buttonOkClick extends Model
                 }   
             }
         }
-    	$counts = 0;
-        foreach ($diseases as $types => $diseaseIn) {
-            foreach ($diseaseIn as $key => $value) {
-                $resoult[$counts] = $value;
-                $counts ++;
+        if ($diseases != NULL) {
+            $counts = 0;
+            foreach ($diseases as $types => $diseaseIn) {
+                foreach ($diseaseIn as $key => $value) {
+                    $resoult[$counts] = $value;
+                    $counts ++;
+                }
+                 
             }
-             
         }
+    	
     	$diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
     	return $diseaseInfo;
     }
