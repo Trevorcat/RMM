@@ -72,7 +72,7 @@ class scanSlided extends Model
         }
         $NULL[0] = NULL;
         $theDisease['DiseasesInfo'] = $resoult == NULL ? $NULL : $resoult;
-        $theDisease['StartMileage'] = $theDisease['DiseasesInfo'] == NULL ? $post['Mileage'] : $theDisease['DiseasesInfo'][0]->Info->DiseasePosition['Mileage'];
+        $theDisease['StartMileage'] = isset($theDisease['DiseasesInfo'][0]) ? $post['Mileage'] : $theDisease['DiseasesInfo'][0]->Info->DiseasePosition['Mileage'];
         $theDisease['EndMileage'] = $theDisease['DiseasesInfo'] == NULL ? $post['Mileage'] + 20 : $theDisease['DiseasesInfo'][count($theDisease['DiseasesInfo'])-1]->Info->DiseasePosition['Mileage'];
         return $theDisease;
 
