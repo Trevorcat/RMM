@@ -27,6 +27,7 @@ class scanSlided extends Model
         }
     	
     	$theDisease['DiseasesInfo'] = $resoult;
+        var_dump($theDisease);
     	$theDisease['StartMileage'] = $theDisease['DiseasesInfo'][0]->DiseaseID;
     	$theDisease['EndMileage'] = $theDisease['DiseasesInfo'][count($theDisease['DiseasesInfo'])-1]->DiseaseID;
     	return $theDisease;
