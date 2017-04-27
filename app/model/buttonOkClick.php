@@ -19,6 +19,7 @@ class buttonOkClick extends Model
     			foreach ($choose as $chooseType => $range) {
     				if ($chooseType != 'Select') {
     					foreach ($range as $name => $value) {
+                            var_dump($value);
                             if (!is_integer($value)) {
                                 $error['error'] = 1;
                                 $error['reason'] = 'the parameter is not integer type';
