@@ -111,32 +111,34 @@ class getTheData extends Model
         return $range;
     }
 
-    public function rangeSearchForOkClick($database, $table, $where, $time, $whereCol = ''){
+    public function rangeSearchForOkClick($database, $table, $where = '', $time, $whereCol = ''){
         $databaseName = $this->databaseName($database);
         $tableName = $time == '' ? $table : $this->tableName($time, $table);
+        $setTheRange = '';
 
-        foreach ($where as $key => $value) {
-            if ($key == 'CrackMinLength' || $key == 'CrackMinWidth' || $key == 'LeakMinArea' || $key == 'DropMinArea') {
-                if ($key == 'CrackMinLength') {
-                    $setTheRange = isset($setTheRange) ? $setTheRange . ' and Length >= ' . $value : 'Length >= ' . $value;
-                }else if ($key == 'CrackMinWidth') {
-                    $setTheRange = isset($setTheRange) ? $setTheRange . ' and Width >= ' . $value : 'Width >= ' . $value;
-                }else {
-                    $setTheRange = isset($setTheRange) ? $setTheRange . ' and Area >= ' . $value : 'Area >= ' . $value;
-                }
-            }else{
-                if ($key == 'CrackMaxLength') {
-                    $setTheRange = isset($setTheRange) ? $setTheRange . ' and Length <= ' . $value : 'Length <= ' . $value;
-                }else if ($key == 'CrackMaxWidth') {
-                    $setTheRange = isset($setTheRange) ? $setTheRange . ' and Width <= ' . $value : 'Width <= ' . $value;
-                }else {
-                    $setTheRange = isset($setTheRange) ? $setTheRange . ' and Area <= ' . $value : 'Area <= ' . $value;
+        if ($where != '') {
+            foreach ($where as $key => $value) {
+                if ($key == 'CrackMinLength' || $key == 'CrackMinWidth' || $key == 'LeakMinArea' || $key == 'DropMinArea') {
+                    if ($key == 'CrackMinLength') {
+                        $setTheRange = $setTheRange == '' ? $setTheRange . ' and Length >= ' . $value : 'Length >= ' . $value;
+                    }else if ($key == 'CrackMinWidth') {
+                        $setTheRange = $setTheRange == '' ? $setTheRange . ' and Width >= ' . $value : 'Width >= ' . $value;
+                    }else {
+                        $setTheRange = $setTheRange == '' ? $setTheRange . ' and Area >= ' . $value : 'Area >= ' . $value;
+                    }
+                }else{
+                    if ($key == 'CrackMaxLength') {
+                        $setTheRange = $setTheRange == '' ? $setTheRange . ' and Length <= ' . $value : 'Length <= ' . $value;
+                    }else if ($key == 'CrackMaxWidth') {
+                        $setTheRange = $setTheRange == '' ? $setTheRange . ' and Width <= ' . $value : 'Width <= ' . $value;
+                    }else {
+                        $setTheRange = $setTheRange == '' ? $setTheRange . ' and Area <= ' . $value : 'Area <= ' . $value;
+                    }
                 }
             }
         }
-
         $wheres = $whereCol == '' ? $setTheRange : $setTheRange . ' and ' . $this->where($whereCol) ;
-        $range = $wheres == '' ? 0 :DB::connection($databaseName)->select('select * from ' . $tableName . ' where ' . $wheres);
+        $range = $wheres == '' ? 0 : DB::connection($databaseName)->select('select * from ' . $tableName . ' where ' . $wheres);
         return $range;
     }
 
