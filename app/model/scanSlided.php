@@ -27,9 +27,8 @@ class scanSlided extends Model
         }
     	
     	$theDisease['DiseasesInfo'] = $resoult;
-        var_dump($theDisease);
-    	$theDisease['StartMileage'] = $theDisease['DiseasesInfo'][0]->DiseaseID;
-    	$theDisease['EndMileage'] = $theDisease['DiseasesInfo'][count($theDisease['DiseasesInfo'])-1]->DiseaseID;
+    	$theDisease['StartMileage'] = $theDisease['DiseasesInfo'] == NULL ? $post['Mileage'] : $theDisease['DiseasesInfo'][0]->DiseaseID;
+    	$theDisease['EndMileage'] = $theDisease['DiseasesInfo'] == NULL ? $post['Mileage'] + 20 : $theDisease['DiseasesInfo'][count($theDisease['DiseasesInfo'])-1]->DiseaseID;
     	return $theDisease;
     }
 }
