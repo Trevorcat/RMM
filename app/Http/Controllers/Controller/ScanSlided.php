@@ -16,7 +16,7 @@ class ScanSlided extends Controller
 
     public function returnDisease(Request $request){
     	$post = $request->json()->all();
-        if (!isset($post['TunnelInfo']['TunnelID'])) {
+        if (!isset($post['TunnelInfo']['TunnelId'])) {
             return $error['error'] = 'There is no \'TunnelInfo => TunnelID\'';
         }else if (!isset($post['Mileage'])) {
             return $error['error'] = 'There is no \'Mileage\'';

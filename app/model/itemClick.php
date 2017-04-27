@@ -14,7 +14,7 @@ class itemClick extends Model
     public function getDiseaseInfo($database, $start)
     {
         $where['start'] = $start->Mileage;
-        $where['range'] = 60;
+        $where['range'] = 40;
         $where['col'] = 'Mileage';
     	$data = $this->theDatas->rangeSearch($database, 'disease', $where, '');
     	return $data;
