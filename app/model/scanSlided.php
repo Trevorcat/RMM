@@ -29,7 +29,8 @@ class scanSlided extends Model
             }
         }
         unset($where);
-        foreach ($resoult as $diseasesNum => $diseaseSearch) {
+        if ($resoult != NULL) {
+            foreach ($resoult as $diseasesNum => $diseaseSearch) {
             $where['DiseaseID'] = $diseaseSearch->DiseaseID;
             $Examination = $diseaseSearch->FoundTime;
             $Diseasetype = $diseaseSearch->DiseaseType;
@@ -63,6 +64,8 @@ class scanSlided extends Model
 
             $resoult[$diseasesNum]->DiseaseDetail = $theDetail;
         }
+        }
+        
         $theDisease['DiseasesInfo'] = $resoult;
         $theDisease['StartMileage'] = $theDisease['DiseasesInfo'] == NULL ? $post['Mileage'] : $theDisease['DiseasesInfo'][0]->Mileage;
         $theDisease['EndMileage'] = $theDisease['DiseasesInfo'] == NULL ? $post['Mileage'] + 20 : $theDisease['DiseasesInfo'][count($theDisease['DiseasesInfo'])-1]->Mileage;
