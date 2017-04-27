@@ -21,6 +21,7 @@ class scanSlided extends Model
             $theDiseases = $this->theDatas->rangeSearch($database, 'disease', $where, '', $whereCol);
         }
         $resoultNum = 0;
+        $resoult = NULL;
         foreach ($theDiseases as $time => $diseases) {
            $resoult[$resoultNum] = $diseases;
         }
