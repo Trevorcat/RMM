@@ -12,7 +12,6 @@ class buttonOkClick extends Model
     }
 
     public function getTheDisease($post){
-        var_dump($post);
     	$database = $post['TunnelInfo']['TunnelId'];
         $diseases = NULL;
         $where = NULL;
@@ -77,7 +76,6 @@ class buttonOkClick extends Model
         }
     	
     	$diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
-        var_dump($diseaseInfo);
     	return $diseaseInfo;
     }
 }
