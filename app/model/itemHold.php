@@ -60,7 +60,7 @@ class itemHold extends Model
                 return $error['error'] = 'can not find anything';
             }
             // var_dump($theDetails);
-            return $theDetail[0];
+            return $theDetail[0][0];
             
             
         }
