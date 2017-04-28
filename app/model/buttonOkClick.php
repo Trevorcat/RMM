@@ -51,7 +51,7 @@ class buttonOkClick extends Model
                             continue;
                         }
                         $diseaseValue->Position['Mileage'] = $disease[$type][$diseaseNum]->Mileage;
-                        $diseaseValue->Position['DiseasePosition'] = $disease[$type][$diseaseNum]->Position;
+                        $diseaseValue->DiseasePosition['Position'] = $disease[$type][$diseaseNum]->Position;
                         $disease[$type][$diseaseNum]->PNGURL = $diseaseValue->PNGFile;
                         unset($disease[$type][$diseaseNum]->Mileage);
                         unset($disease[$type][$diseaseNum]->Position);
