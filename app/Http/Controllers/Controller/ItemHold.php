@@ -17,7 +17,7 @@ class ItemHold extends Controller
     	$post = $request->json()->all();
         if (!isset($post['TunnelInfo']['TunnelId'])) {
             $error['error'] = 1;
-            return $error['reason'] = 'There is no \'DiseaseInfo => TunnelId\'';
+            return $error['reason'] = 'There is no \'TunnelInfo => TunnelId\'';
         }else if (!isset($post['DiseaseInfo']['ExaminationTime'])) {
             $error['error'] = 1;
             return $error['reason'] = 'There is no \'DiseaseInfo => ExaminationTime\'';
