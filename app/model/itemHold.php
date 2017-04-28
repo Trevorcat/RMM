@@ -13,7 +13,7 @@ class itemHold extends Model
 
     public function getTheDetail($post){
         $database = $post['TunnelInfo']['TunnelId'];
-        $ExaminationTime = $post['DiseaseInfo']['ExaminationTime'];
+        $ExaminationTime = $post['DiseaseInfo']['FoundTime'];
         foreach ($ExaminationTime as $time => $examination) {
             for($Diseasetype = 0; $Diseasetype <= 4; $Diseasetype ++){
                 switch ($Diseasetype) {

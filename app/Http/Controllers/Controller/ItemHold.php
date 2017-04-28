@@ -18,7 +18,7 @@ class ItemHold extends Controller
         if (!isset($post['TunnelInfo']['TunnelId'])) {
             $error['error'] = 1;
             return $error['reason'] = 'There is no \'TunnelInfo => TunnelId\'';
-        }else if (!isset($post['DiseaseInfo']['ExaminationTime'])) {
+        }else if (!isset($post['DiseaseInfo']['FoundTime'])) {
             $error['error'] = 1;
             return $error['reason'] = 'There is no \'DiseaseInfo => ExaminationTime\'';
         }else{
