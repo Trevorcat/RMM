@@ -50,7 +50,7 @@ class buttonOkClick extends Model
                         if ($disease[$type][$diseaseNum]->Mileage > $post['EndMileage'] || $disease[$type][$diseaseNum]->Mileage < $post['StartMileage']) {
                             continue;
                         }
-                        $diseaseValue->Position['Mileage'] = $disease[$type][$diseaseNum]->Mileage;
+                        $diseaseValue->DiseasePosition['Mileage'] = $disease[$type][$diseaseNum]->Mileage;
                         $diseaseValue->DiseasePosition['Position'] = $disease[$type][$diseaseNum]->Position;
                         $disease[$type][$diseaseNum]->PNGURL = $diseaseValue->PNGFile;
                         unset($disease[$type][$diseaseNum]->Mileage);
