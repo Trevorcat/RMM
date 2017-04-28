@@ -20,7 +20,7 @@ class ItemHold extends Controller
             return $error['reason'] = 'There is no \'TunnelInfo => TunnelId\'';
         }else if (!isset($post['DiseaseInfo']['FoundTime'])) {
             $error['error'] = 1;
-            return $error['reason'] = 'There is no \'DiseaseInfo => ExaminationTime\'';
+            return $error['reason'] = 'There is no \'DiseaseInfo => FoundTime\'';
         }else{
             $diseaseDetail['DiseaseDetail'] = $this->itemhold->getTheDetail($post);
         }
