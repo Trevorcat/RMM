@@ -3,84 +3,31 @@
 namespace App\model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Input;
 
-class buttonOkClick extends Model
+class appOnLoad extends Model
 {
     //
     public function __construct(){
         $this->theDatas = new \App\model\getTheData();
     }
 
-    public function getTheDisease($post){
-        $database = $post['TunnelInfo']['TunnelId'];
-        $diseases = NULL;
-        $where = NULL;
-        foreach ($post['TunnelInfo']['ExaminationTime'] as $num => $ExaminationTime) {
-            foreach ($post['Filter'] as $type => $choose) {
-
-                if ($choose['Select'] == 1 && $type != 'Scratch' && $type != 'Exception') {
-
-                    foreach ($choose as $chooseType => $range) {
-                        if ($chooseType != 'Select') {
-                            foreach ($range as $name => $value) {
-                                if ($value == NULL) {
-                                    if (strstr($name, 'Max')) {
-                                        $where[$type . $name] = 99999;
-                                    }elseif (strstr($name, 'Min')) {
-                                        $where[$type . $name] = 0;
-                                    }
-                                }elseif (!is_integer($value)) {
-                                    $error['error'] = 1;
-                                    $error['reason'] = 'the parameter is not integer type';
-                                    return $error;
-                                }else{
-                                    $where[$type . $name] = $value;
-                                }
-                                
-                            }
-                        }
-                    }
-                    $diseaseSelected = $this->theDatas->rangeSearchForOkClick($database, strtolower($type).'_disease', $where, $ExaminationTime, '');
-                    if ($diseaseSelected == 0) {
-                        continue;
-                    }
-                    unset($where);
-                    $selectDiseaseNum = 0;
-                    foreach ($diseaseSelected as $diseaseNum => $diseaseValue) {                    
-                        $where['DiseaseID'] = $diseaseValue->DiseaseID;
-                        $disease[$type][$diseaseNum] = $this->theDatas->getDataByTablenameAndDatabasename($database, 'disease', $where == NULL? '':$where, '')[0];
-                        unset($where);
-
-                        if ($disease[$type][$diseaseNum]->Mileage > $post['EndMileage'] || $disease[$type][$diseaseNum]->Mileage < $post['StartMileage']) {
-                            continue;
-                        }
-                        $diseaseValue->DiseasePosition['Mileage'] = $disease[$type][$diseaseNum]->Mileage;
-                        $diseaseValue->DiseasePosition['Position'] = $disease[$type][$diseaseNum]->Position;
-                        $disease[$type][$diseaseNum]->PNGURL = $diseaseValue->PNGFile;
-                        unset($disease[$type][$diseaseNum]->Mileage);
-                        unset($disease[$type][$diseaseNum]->Position);
-                        unset($diseaseValue->PNGFile);
-
-                        $disease[$type][$diseaseNum]->Info = $diseaseValue;
-                        $diseases[$type][isset($diseases[$type])?(count($diseases[$type]) ):0] = $disease[$type][$diseaseNum];
-                        $selectDiseaseNum ++;
-                    }
-                }   
-            }
+    public function getAuthority($request){
+        $post = $request->json()->all();
+        if (!isset($post['UserInfo']['openId'])) {
+            return $error['error'] = 'There\'s no \'UserInfo => openId\' in POST';
         }
-        if ($diseases != NULL) {
-            $counts = 0;
-            foreach ($diseases as $types => $diseaseIn) {
-                foreach ($diseaseIn as $key => $value) {
-                    $resoult[$counts] = $value;
-                    $counts ++;
-                }
-                 
-            }
+        $where['OpenId'] = $post['UserInfo']['openId'];
+        $data = $this->theDatas->getDataByTablenameAndDatabasename('', 'authority', $where,'');
+        if ($data[0]->OpenId == '000000') {
+            $return['IsTourist'] = 1;
+        }else{
+            $return['IsTourist'] = 0;
         }
-        
-        $diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
-        // var_dump($diseaseInfo);
-        return $diseaseInfo;
+
+        foreach ($data as $key => $value) {
+            $return['TunnelID'][$key] = $value->TunnelId;
+        }
+        return $return;
     }
 }
