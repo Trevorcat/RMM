@@ -23,8 +23,12 @@ class buttonOkClick extends Model
                     foreach ($choose as $chooseType => $range) {
                         if ($chooseType != 'Select') {
                             foreach ($range as $name => $value) {
-                                if ($value == NULL && $value != 0) {
-                                    break;
+                                if ($value == NULL) {
+                                    if (strstr($name, 'Max')) {
+                                        $where[$type . $name] = 99999;
+                                    }elseif (strstr($name, 'Min')) {
+                                        $where[$type . $name] = 0;
+                                    }
                                 }elseif (!is_integer($value)) {
                                     $error['error'] = 1;
                                     $error['reason'] = 'the parameter is not integer type';
@@ -76,6 +80,7 @@ class buttonOkClick extends Model
         }
     	
     	$diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
+        // var_dump($diseaseInfo);
     	return $diseaseInfo;
     }
 }
