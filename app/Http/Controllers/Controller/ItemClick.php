@@ -53,6 +53,7 @@ class ItemClick extends Controller
     	}
         $theDiseaseInfo['StartMileage'] = $this->itemclick->getTheStartMileage($database)->DiseaseID;
     	$TheDiseaseInfo['DiseasesInfo'] = $theDiseaseInfo;
+        var_dump($TheDiseaseInfo);
         return $TheDiseaseInfo;
     }
 

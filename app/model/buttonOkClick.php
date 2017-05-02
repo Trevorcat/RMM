@@ -80,6 +80,7 @@ class buttonOkClick extends Model
         }
     	
     	$diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
+        // var_dump($diseaseInfo);
     	return $diseaseInfo;
     }
 }
