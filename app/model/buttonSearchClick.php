@@ -4,15 +4,15 @@ namespace App\model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class buttonOkClick extends Model
+class buttonSearchClick extends Model
 {
     //
     public function __construct(){
-        $this->theDatas = new \App\model\getTheData();
+    	$this->theDatas = new \App\model\getTheData();
     }
 
     public function getTheDisease($post){
-        $database = $post['TunnelInfo']['TunnelId'];
+    	$database = $post['TunnelInfo']['TunnelId'];
         $diseases = NULL;
         $where = NULL;
         foreach ($post['TunnelInfo']['ExaminationTime'] as $num => $ExaminationTime) {
@@ -78,9 +78,9 @@ class buttonOkClick extends Model
                  
             }
         }
-        
-        $diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
+    	
+    	$diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
         // var_dump($diseaseInfo);
-        return $diseaseInfo;
+    	return $diseaseInfo;
     }
 }

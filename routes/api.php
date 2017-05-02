@@ -64,6 +64,11 @@ Route::group(['middleware' => ['web']], function () {
 	});
 	Route::post('/buttonokclick/','Controller\ButtonOkClick@returnDiseases');
 
+	Route::get('/buttonsearchclick/',function(){
+		return 'The API can not use the GET method';
+	});
+	Route::post('/buttonsearchclick/','Controller\ButtonSearchClick@returnDiseases');
+
 	Route::any('/test/','SearchDirTest@test');
 	
 });
