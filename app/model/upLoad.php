@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class upLoad extends Model
 {
     //
-    private $path = "/uploads";				   				//上传文件保存的路径
+    private $path = '';				   						//上传文件保存的路径
 	private $allowtype = array('jpg','gif','png','zip'); 	//设置限制上传文件的类型
 	private $maxsize = 1000000;  							//限制文件上传大小（字节）
 	private $israndname = true;   							//设置是否随机重命名文件， false不随机
@@ -57,10 +57,11 @@ class upLoad extends Model
 			return false;
 		}
 		/* 将文件上传的信息取出赋给变量 */
-		$name = $_FILES[$fileField]['name'];
-		$tmp_name = $_FILES[$fileField]['tmp_name'];
-		$size = $_FILES[$fileField]['size'];
-		$error = $_FILES[$fileField]['error'];
+		var_dump($_FILES);
+		$name = $_FILES['pic']['name'];
+		$tmp_name = $_FILES['pic']['tmp_name'];
+		$size = $_FILES['pic']['size'];
+		$error = $_FILES['pic']['error'];
 		/* 如果是多个文件上传则$file["name"]会是一个数组 */
 		if(is_Array($name)){  		
 			$errors=array();
@@ -215,7 +216,7 @@ class upLoad extends Model
 			$this->setOption('errorNum', -5);
 			return false;
 		}
-		var_dump($_SERVER['SCRIPT_NAME'], file_exists(__FILE__), is_writable($this->path));
+		var_dump(dirname(dirname(dirname(__FILE__))).'/public/uploads', file_exists(dirname(dirname(dirname(__FILE__))).'/public/uploads'), is_writable(dirname(dirname(dirname(__FILE__))).'/public/uploads'));
 		if (!file_exists($this->path) || !is_writable($this->path)) {
 			if (!@mkdir($this->path, 0755)) {
 				$this->setOption('errorNum', -4);

@@ -10,3 +10,4 @@ Homestead.yaml
 .env
 /public
 /public/*
+.DS_Store

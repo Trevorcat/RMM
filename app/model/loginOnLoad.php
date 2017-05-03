@@ -32,7 +32,8 @@ class loginOnLoad extends Model
 
         foreach ($events as $key => $value) {
             $where['TunnelId'] = $database;
-            $value->PICsFilePath = $this->theDatas->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '')[0]->PICsFilePath;
+            $value->PICsFilePath[0] = $this->theDatas->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '')[0]->PICsFilePath;
+            $value->PICsFilePath[1] = $this->theDatas->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '')[0]->PICsFilePath2;
         }
     	return $events;
     }
