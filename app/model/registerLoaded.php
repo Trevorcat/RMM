@@ -20,6 +20,11 @@ class registerLoaded extends Model
 
             $where['TunnelID'] = $tunnelId;
             $tunnels = $this->theDatas->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '')[0];
+            $PICsPath[0] = $tunnels->PICsFilePath;
+            $PICsPath[1] = $tunnels->PICsFilePath2;
+            unset($tunnels->PICsFilePath);
+            unset($tunnels->PICsFilePath2);
+            $tunnels->PICsFilePath = $PICsPath;
             $tunnelDetail = $this->theDatas->getDataByTablenameAndDatabasename($tunnelId, 'tunnel_info', '', '');
             foreach ($tunnelDetail as $examinationTime => $details) {   //遍历当前隧道里的查询记录
 
@@ -274,7 +279,6 @@ class registerLoaded extends Model
             unset($tunnelInfo[$tunnelNum]);
             $tunnelInfo[$tunnelNum] = $tunnels;
         } 
-        // var_dump($tunnelInfo);
         return $tunnelInfo;
     }
     
