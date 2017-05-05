@@ -39,7 +39,7 @@ class LoginOnLoad extends Controller
                     unset($event->CountofDrop);
                     unset($event->CountofScratch);
                     unset($event->CountofException);
-                    if ($event->isChecked == 1) {
+                    if ($event->IsChecked == 1) {
                         unset($event);
                         continue;
                     }
