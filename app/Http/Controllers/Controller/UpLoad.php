@@ -19,7 +19,7 @@ class UpLoad extends Controller
     public $unzipFileStructPath;
 
     public function __construct(){
-    	$this->up = new \App\model\upload();
+    	$this->up = new \App\model\upLoad();
         $this->dataCore = new \App\model\getTheData();
 
     	$this->path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
