@@ -307,6 +307,7 @@ class UpLoad extends Controller
 
             $CreateTableSql[2] = "CREATE TABLE `".$ProcessExaminationTime."drop_disease` (
                 `DiseaseID` varchar(255) NOT NULL,
+                `Area` float DEFAULT NULL,
                 `SeverityClassfication` int(4) unsigned DEFAULT NULL,
                 `HighDefinitionVideoPath1` varchar(500) DEFAULT NULL,
                 `HighDefinitionVideoPath2` varchar(500) DEFAULT NULL,
