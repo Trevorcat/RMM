@@ -57,8 +57,7 @@ class UpLoad extends Controller
                             }
                             $TextName = $DiseaseFolderContent[array_search($DiseaseFolder.$ExaminationTime.'.txt', $DiseaseFolderContent)];
                             $TextPath = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$TextName;
-                            $TextContent = $this->readTheText($TextPath);                            
-                            var_dump($TextContent);
+                            $TextContent = $this->readTheText($TextPath);
                             foreach ($DiseaseFolderContent as $Mark => $PicsFolder) {
                                 if (is_string($Mark)) {
                                     if (isset($insertParameter)) {
@@ -71,19 +70,15 @@ class UpLoad extends Controller
                                     $TextMark = array_search($Mark, $TextContent['DiseaseId']);
                                     foreach ($TextContent as $Title => $Contents) {
                                         $insertParameter[$Title] = $Contents[$TextMark];
-                                        var_dump($insertParameter);
                                     }
 
                                     $insertParameter['PNGFile'] = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$Mark.'.png';
-                                    // var_dump($insertParameter);
                                     $database = explode('_', $TunnelName)[0];
                                     $requireDatabase = $this->originCreateDatabaseSqlString($database);
-                                    var_dump($requireDatabase);
                                     if ($requireDatabase == 0) {
                                         return 0;
                                     }
                                     $requireTable = $this->originCreateTableSqlString($database, explode('_', $TunnelName)[1]);
-                                    var_dump($requireTable);
                                     if ($requireTable == 0) {
                                         return 0;
                                     }
@@ -155,12 +150,14 @@ class UpLoad extends Controller
             }
         }
         $ProcessedTextContent = $TextMixed;
+        var_dump($ProcessedTextContent);
         $ColNum = 0;
         foreach ($TextMixed as $TextTile => $array) {
             foreach ($TextContent as $TextCol => $value) {
                 if (!is_array($ProcessedTextContent[$TextTile])) {
                     $ProcessedTextContent[$TextTile] = array();
                 }
+                var_dump($ProcessedTextContent[$TextTile], $TextTile);
                 array_push($ProcessedTextContent[$TextTile], trim($value[$ColNum]));
             }
             $ColNum ++;
@@ -182,7 +179,7 @@ class UpLoad extends Controller
         $exists = $this->dataCore->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '');
         if (count($exists) == 0) {
             $Sql = 'CREATE DATABASE '. $database . ';'."\n"."
-                    CREATE TABLE 0837yingxiuhuoshaopingsuidao03.`disease` (
+                    CREATE TABLE $database.`disease` (
                     `DiseaseID` varchar(255) NOT NULL,
                     `Position` int(4) unsigned NOT NULL,
                     `Mileage` int(4) unsigned DEFAULT NULL,
@@ -192,7 +189,7 @@ class UpLoad extends Controller
                     PRIMARY KEY (`DiseaseID`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=gbk;
 
-                    CREATE TABLE 0837yingxiuhuoshaopingsuidao03.`tunnel_info` (
+                    CREATE TABLE $database.`tunnel_info` (
                     `ExaminationTime` date NOT NULL,
                     `CountofCrack` int(4) unsigned DEFAULT NULL,
                     `CountofLeak` int(4) unsigned DEFAULT NULL,
@@ -203,6 +200,7 @@ class UpLoad extends Controller
                     `Severity` int(4) unsigned DEFAULT NULL,
                     PRIMARY KEY (`ExaminationTime`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=gbk;";
+            var_dump($Sql);
             $success = $this->dataCore->sql('',$Sql) ;
             if ($success == 1) {
                 $insertSql = "INSERT INTO `RMM`.`tunnel_info` (`TunnelId`, `TunnelName`, `TunnelDescription`, `Longitude`, `Latitude`, `Mileage`, `PICsFilePath`) VALUES ('$database', '$database', '1.本项目起于约德高速公路召唤师峡谷路段, 2.修建单位：约德尔；监理单位：诺克萨斯；设计单位：符文大陆；竣工时间：2010-2-1', '104.085547', '30.562212', '2321', '0837yingxiuhuoshaopingsuidao02/Tunnel.jpg');";
@@ -259,6 +257,7 @@ class UpLoad extends Controller
      * 若存在则返回空字符
      */
     public function originCreateTableSqlString($database, $ExaminationTime){
+        var_dump('asdfasdf');
         $Examination = str_split($ExaminationTime, 4);
         $date = str_split($Examination[1], 2);
         $day = $date[1];
@@ -270,6 +269,7 @@ class UpLoad extends Controller
 
         $where['ExaminationTime'] = $SearchFoundTime;
         $SearchResoult = $this->dataCore->getDataByTablenameAndDatabasename($database, 'tunnel_info', $where, '');
+        var_dump(count($SearchResoult));
         if (count($SearchResoult) == 1) {
             return 1;
         }else{
@@ -344,12 +344,13 @@ class UpLoad extends Controller
 
             foreach ($CreateTableSql as $key => $value) {
                 $success = $this->dataCore->sql($database, $value);
+                var_dump($success);
                 if ($success == 0) {
                     return 0;
                 }
             }
 
-            $insertTunnelInfo = "INSERT INTO `0837yingxiuhuoshaopingsuidao03`.`tunnel_info` (`ExaminationTime`) VALUES ('$SearchFoundTime');";
+            $insertTunnelInfo = "INSERT INTO `$database`.`tunnel_info` (`ExaminationTime`) VALUES ('$SearchFoundTime');";
 
             $insertSuccess = $this->dataCore->sql($database, $insertTunnelInfo);
             if ($insertSuccess == 0) {
@@ -401,9 +402,7 @@ class UpLoad extends Controller
         }
         $DiseaseTableSQL = "INSERT INTO `".$database."`.`disease` (`DiseaseID`, `Position`, `Mileage`, `DiseaseType`, `FoundTime`) VALUES ('".$data['DiseaseId']."', '".$data['Position']."', '".$data['Mileage']."', '".$data['DiseaseType']."', '".$ExaminationTime."');";
         $where['DiseaseId'] = $data['DiseaseId'];
-        var_dump($ProcessExaminationTime.$tableName.'_disease', $where);
         $exists = $this->dataCore->getDataByTablenameAndDatabasename($database, 'disease', $where, '');
-        var_dump($exists);
         if (count($exists) == 0) {
             $insertIntoDiseaseTable = $this->dataCore->Sql($database, $DiseaseTableSQL);
             if ($insertIntoDiseaseTable == 0) {
