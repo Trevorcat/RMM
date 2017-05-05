@@ -4,11 +4,20 @@ namespace App\model;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use PDO;
 
 class getTheData extends Model
 {
     //
     public function __construct(){
+    }
+
+    public function sql($database, $sql){
+
+        $pdo = new PDO('mysql:host=123.206.226.28;dbname='.$database.';port=3306','root','');
+        $pdo->exec('set names utf8');
+        $success = $pdo->query($sql);
+        return $success == NULL ? 0 : 1;
     }
 
     public function countTheDetails($database, $table, $wheres = '', $time = ''){
