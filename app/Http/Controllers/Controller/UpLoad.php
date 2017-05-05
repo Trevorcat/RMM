@@ -47,7 +47,6 @@ class UpLoad extends Controller
 
                 if (file_exists($searchPath)) {
                     $this->unzipFileStructPath[$fileName] = $this->listDir($searchPath, array());
-
                     foreach ($this->unzipFileStructPath as $TunnelName => $Source) { //遍历文档机构
 
                         $ExaminationTime = explode('_', $TunnelName)[1];
@@ -154,10 +153,11 @@ class UpLoad extends Controller
         $ColNum = 0;
         foreach ($TextMixed as $TextTile => $array) {
             foreach ($TextContent as $TextCol => $value) {
+                var_dump($value);
                 if (!is_array($ProcessedTextContent[$TextTile])) {
                     $ProcessedTextContent[$TextTile] = array();
                 }
-                var_dump($ProcessedTextContent[$TextTile], $TextTile);
+                var_dump($ProcessedTextContent[$TextTile], $TextTile, $value[$ColNum],$ColNum);
                 array_push($ProcessedTextContent[$TextTile], trim($value[$ColNum]));
             }
             $ColNum ++;
@@ -286,7 +286,7 @@ class UpLoad extends Controller
                 `PointCloudCrossSectionPath` varchar(500) DEFAULT NULL,
                 `PNGFile` varchar(500) NOT NULL,
                 PRIMARY KEY (`DiseaseID`),
-                CONSTRAINT `2016_11_08_crack_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
+                CONSTRAINT `".$ProcessExaminationTime."crack_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=gbk;";
 
             $CreateTableSql[1] = "CREATE TABLE `".$ProcessExaminationTime."leak_disease` (
@@ -302,7 +302,7 @@ class UpLoad extends Controller
                 `PointCloudCrossSectionPath` varchar(500) DEFAULT NULL,
                 `PNGFile` varchar(500) NOT NULL,
                 PRIMARY KEY (`DiseaseID`),
-                CONSTRAINT `2016_11_08_leak_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
+                CONSTRAINT `".$ProcessExaminationTime."leak_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=gbk;";
 
             $CreateTableSql[2] = "CREATE TABLE `".$ProcessExaminationTime."drop_disease` (
@@ -316,7 +316,7 @@ class UpLoad extends Controller
                 `PointCloudCrossSectionPath` varchar(500) DEFAULT NULL,
                 `PNGFile` varchar(500) NOT NULL,
                 PRIMARY KEY (`DiseaseID`),
-                CONSTRAINT `2016_11_08_drop_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
+                CONSTRAINT `".$ProcessExaminationTime."drop_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=gbk;";
 
             $CreateTableSql[3] = "CREATE TABLE `".$ProcessExaminationTime."scratch_disease` (
@@ -328,7 +328,7 @@ class UpLoad extends Controller
                 `HighDefinitionVideoPath3` varchar(500) DEFAULT NULL,
                 `PNGFile` varchar(500) NOT NULL,
                  PRIMARY KEY (`DiseaseID`),
-                CONSTRAINT `2016_11_08_scratch_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
+                CONSTRAINT `".$ProcessExaminationTime."scratch_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=gbk;";
 
             $CreateTableSql[4] = "CREATE TABLE `".$ProcessExaminationTime."exception_disease` (
@@ -337,9 +337,10 @@ class UpLoad extends Controller
                 `HighDefinitionVideoPath2` varchar(500) DEFAULT NULL,
                 `HighDefinitionVideoPath3` varchar(500) DEFAULT NULL,
                 `Description` longtext,
+                `SeverityClassfication` int(4) unsigned DEFAULT NULL,
                 `PNGFile` varchar(500) NOT NULL,
                 PRIMARY KEY (`DiseaseID`),
-                CONSTRAINT `2016_11_08_exception_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
+                CONSTRAINT `".$ProcessExaminationTime."exception_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=gbk;";
 
             foreach ($CreateTableSql as $key => $value) {
@@ -371,6 +372,7 @@ class UpLoad extends Controller
      */
     public function originInsertSqlString($database, $data, $type, $ExaminationTime){
         var_dump("asdfasdf");
+        var_dump($data);
         $Examination = str_split($ExaminationTime, 4);
         $date = str_split($Examination[1], 2);
         $day = $date[1];
