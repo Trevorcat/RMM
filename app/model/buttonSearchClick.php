@@ -18,7 +18,7 @@ class buttonSearchClick extends Model
         foreach ($post['TunnelInfo']['ExaminationTime'] as $num => $ExaminationTime) {
             foreach ($post['Filter'] as $type => $choose) {
 
-                if ($choose['Select'] == 1 && $type != 'Scratch' && $type != 'Exception') {
+                if ($choose['Select'] == 1 && $type != 'Exception') {
 
                     foreach ($choose as $chooseType => $range) {
                         if ($chooseType != 'Select') {
@@ -80,7 +80,7 @@ class buttonSearchClick extends Model
         }
     	
     	$diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
-        // var_dump($diseaseInfo);
+        var_dump($diseaseInfo);
     	return $diseaseInfo;
     }
 }

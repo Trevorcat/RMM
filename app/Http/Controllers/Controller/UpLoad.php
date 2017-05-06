@@ -47,23 +47,28 @@ class UpLoad extends Controller
 
                 if (file_exists($searchPath)) {
                     $this->unzipFileStructPath[$fileName] = $this->listDir($searchPath, array());
-                    foreach ($this->unzipFileStructPath as $TunnelName => $Source) { //遍历文档机构
-
+                    foreach ($this->unzipFileStructPath as $TunnelName => $Source) { //遍历文档结构
+                        $database = explode('_', $TunnelName)[0];
                         $ExaminationTime = explode('_', $TunnelName)[1];
-                        foreach ($Source as $DiseaseFolder => $DiseaseFolderContent) {
+                        foreach ($Source as $DiseaseFolder => $DiseaseFolderContent) {//进入其中一文件夹
                             if (array_search($DiseaseFolder.$ExaminationTime.'.txt', $DiseaseFolderContent) == false) {
                                 continue;
                             }
                             $TextName = $DiseaseFolderContent[array_search($DiseaseFolder.$ExaminationTime.'.txt', $DiseaseFolderContent)];
                             $TextPath = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$TextName;
                             $TextContent = $this->readTheText($TextPath);
-                            foreach ($DiseaseFolderContent as $Mark => $PicsFolder) {
+                            foreach ($DiseaseFolderContent as $Mark => $PicsFolder) {//进入对应资源包
                                 if (is_string($Mark)) {
                                     if (isset($insertParameter)) {
                                         unset($insertParameter);
                                     }
                                     foreach ($PicsFolder as $key => $value) {
-                                        $insertParameter['HighDefinitionVideoPath'.($key+1)] = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$Mark.'/'.$value;
+                                        $picType = explode('.', $value);
+                                        if ($picType == 'bmp') {
+                                            $insertParameter['InfrareVideoPath'] = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$Mark.'/'.$value;
+                                        }else{
+                                            $insertParameter['HighDefinitionVideoPath'.($key+1)] = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$Mark.'/'.$value;
+                                        }
                                     }
                                     
                                     $TextMark = array_search($Mark, $TextContent['DiseaseId']);
@@ -72,7 +77,6 @@ class UpLoad extends Controller
                                     }
 
                                     $insertParameter['PNGFile'] = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$Mark.'.png';
-                                    $database = explode('_', $TunnelName)[0];
                                     $requireDatabase = $this->originCreateDatabaseSqlString($database);
                                     if ($requireDatabase == 0) {
                                         return 0;
@@ -81,13 +85,18 @@ class UpLoad extends Controller
                                     if ($requireTable == 0) {
                                         return 0;
                                     }
-                                    $insertSQL = $this->originInsertSqlString($database, $insertParameter, $DiseaseFolder, explode('_', $TunnelName)[1]);
-                                    if ($insertSQL == 0) {
+                                    $insertSQLSuccess = $this->originInsertSqlString($database, $insertParameter, $DiseaseFolder, explode('_', $TunnelName)[1]);
+                                    if ($insertSQLSuccess == 0) {
+                                        return 0;
+                                    }
+                                    $updateSQLSuccess = $this->updateTunnelInfo($database, $ExaminationTime);
+                                    if ($updateSQLSuccess == 0) {
                                         return 0;
                                     }
                                 }
                             }
                         }
+
                     }
                 }
 
@@ -452,8 +461,30 @@ class UpLoad extends Controller
      * 若不存在则返回插入的SQL语句
      * 若存在则返回空字符
      */
-    public function mixTheSqlString($originStrings){
+    public function updateTunnelInfo($database, $ExaminationTime){
+        $Examination = str_split($ExaminationTime, 4);
+        $date = str_split($Examination[1], 2);
+        $day = $date[1];
+        $month = $date[0];
+        $year = $Examination[0];
+        $SearchFoundTime = $year . '-' . $month . '-' . $day;
+        $ProcessExaminationTime = $year . '_' . $month . '_' . $day . '_';
 
+        $tables = array("crack", "leak", "drop", "scratch", "exception");
+        foreach ($tables as $key => $value) {
+            $countSql = "select count(*) from `".$database."`.`".$ProcessExaminationTime.$value."`;";
+            $count[$value] = $this->dataCore->Sql($database, $countSql);
+        }
+        
+        $updateSql = "UPDATE `$database`.`tunnel_info` SET `CountofCrack`='".$count['crack']."', `CountofLeak`='".$count['leak']."', `CountofDrop`='".$count['drop']."', `CountofScratch`='".$count['scratch']."', `CountofException`='".$count['exception']."' WHERE `ExaminationTime`='".$SearchFoundTime."';";
+
+        $updateSuccess = $this->dataCore->Sql($database, $updateSql);
+
+        if ($updateSuccess != 0) {
+            return 1;
+        }else{
+            return 0;
+        }
     }
 
 }

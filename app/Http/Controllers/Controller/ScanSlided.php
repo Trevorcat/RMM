@@ -25,6 +25,9 @@ class ScanSlided extends Controller
         }else if (!isset($post['TunnelInfo']['ExaminationTime'])) {
             $error['error'] = 1;
             return $error['reason'] = 'There is no \'TunnelInfo => ExaminationTime\'';
+        }else if (!isset($post['Filter'])) {
+            $error['error'] = 1;
+            return $error['reason'] = 'There is no \'Filter\'';
         }else{
             $theDiseases = $this->scanslided->searchTheDisease($post);
             return $theDiseases;

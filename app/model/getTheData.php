@@ -116,6 +116,7 @@ class getTheData extends Model
         $rangeCover = $where['start'] + $where['range'];
 
         $wheres = $whereCol == '' ? $where['col'] . ' >= ' . $where['start'] . ' and ' . $where['col'] . ' <= ' . $rangeCover . ' order by Mileage asc'  : $where['col'] . ' >= ' . $where['start'] . ' and ' . $where['col'] . ' <= ' . $rangeCover . ' and ' . $this->where($whereCol) . ' order by Mileage asc';
+
         $range = $wheres == '' ? 0 :DB::connection($databaseName)->select('select * from ' . $tableName . ' where ' . $wheres);
         return $range;
     }
@@ -127,7 +128,7 @@ class getTheData extends Model
 
         if ($where != '') {
             foreach ($where as $key => $value) {
-                if ($key == 'CrackMinLength' || $key == 'CrackMinWidth' || $key == 'LeakMinArea' || $key == 'DropMinArea') {
+                if ($key == 'CrackMinLength' || $key == 'CrackMinWidth' || $key == 'LeakMinArea' || $key == 'DropMinArea' || $key == 'CratchMinArea') {
                     if ($key == 'CrackMinLength') {
                         $setTheRange = $setTheRange == '' ? $setTheRange . ' and Length >= ' . $value : 'Length >= ' . $value;
                     }else if ($key == 'CrackMinWidth') {

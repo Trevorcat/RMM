@@ -16,6 +16,7 @@ class scanSlided extends Model
         $where['col'] = 'Mileage';
         $where['start'] = $post['Mileage'];
         $where['range'] = 20;
+        $diseases = array();
 
         $maxMileage = $this->theDatas->theMaxOfCol($database, 'disease', 'Mileage', '')[0]->max;
         if ($post['Mileage'] < 0) {
@@ -23,10 +24,35 @@ class scanSlided extends Model
         }elseif ($post['Mileage'] >= $maxMileage) {
             $theDisease['DiseasesInfo'] = NULL;
         }else{
-            foreach ($post['TunnelInfo']['ExaminationTime'] as $key => $value) {
-                $whereCol['FoundTime'] = $value;
+            foreach ($post['TunnelInfo']['ExaminationTime'] as $key => $ExaminationTime) {
+                $whereCol['FoundTime'] = $ExaminationTime;
+//
+                $rangeWhere = array();
+                foreach ($post['Filter'] as $type => $choose) {
+                    if ($choose['Select'] == 1) {
+                        switch ($type) {
+                            case 'Crack':
+                                $typeNum = 0;
+                                break;
+                            case 'Leak':
+                                $typeNum = 1;
+                                break;
+                            case 'Drop':
+                                $typeNum = 2;
+                                break;
+                            case 'Cratch':
+                                $typeNum = 3;
+                                break;
+                            default:
+                                $typeNum = 4;
+                                break;
+                        }
+                        array_push($rangeWhere, strtolower($typeNum));
+                    }       
+                }
                 $theDiseases[$key] = $this->theDatas->rangeSearch($database, 'disease', $where, '', $whereCol);
             }
+//
             $resoultNum = 0;
             $resoult = NULL;
             foreach ($theDiseases as $time => $diseases) {
@@ -77,11 +103,25 @@ class scanSlided extends Model
                     unset($resoult[$diseasesNum]->Mileage);
                 }
             }
+            $sureSearch = array();
+            if ($resoult != NULL) {
+                foreach ($rangeWhere as $key => $value) {
+                    foreach ($resoult as $diseasesNum => $diseaseSearchd) {
+                        if ($diseaseSearchd->DiseaseType == $value) {
+                            array_push($sureSearch, $diseaseSearchd);
+                        }else{
+                            continue;
+                        }
+                    }
+                }
+                
+            }
             $NULL[0] = NULL;
-            $theDisease['DiseasesInfo'] = $resoult == NULL ? $NULL : $resoult;
+            $theDisease['DiseasesInfo'] = $sureSearch == NULL ? $NULL : $sureSearch;
             $theDisease['StartMileage'] = $post['Mileage'];
             $theDisease['EndMileage'] = $post['Mileage'] + 20;
         }
         return $theDisease;
     }
+
 }
