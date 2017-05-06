@@ -40,7 +40,7 @@ class scanSlided extends Model
                             case 'Drop':
                                 $typeNum = 2;
                                 break;
-                            case 'Cratch':
+                            case 'Scratch':
                                 $typeNum = 3;
                                 break;
                             default:
@@ -107,8 +107,7 @@ class scanSlided extends Model
             if ($resoult != NULL) {
                 foreach ($rangeWhere as $key => $value) {
                     foreach ($resoult as $diseasesNum => $diseaseSearchd) {
-                        if ($diseaseSearchd->DiseaseType == $value) {
-                            array_push($sureSearch, $diseaseSearchd);
+                        if ($diseaseSearchd->DiseaseType == $value) {                            array_push($sureSearch, $diseaseSearchd);
                         }else{
                             continue;
                         }
