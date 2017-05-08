@@ -30,66 +30,99 @@ class UpLoad extends Controller
     	$this->up->set("israndname", false);
     }
 
+    /**
+     * @param Reequest类 laravel封装类， 用于接受post上传文件信息
+     * 
+     * @return 0/1 返回值，0：失败， 1：成功
+     * 
+     * 上传脚本接收到post请求，获取文件指针后存入指定位置 public/uploads
+     * 进而自动解压该上传文件到指定位置 public/unzip 
+     * 读取改解压完成的文件结构及其内容文件的名称、扩展名， 将文件夹权限设置为775(执行权与读权)
+     * 将这些数据整理之后，自动拼接成sql语句，逐条向数据库服务器发送query，完成入库
+     * 
+     */
+
     public function upload(Request $request){
     	$zipFile = $request->all();
+        //当$zipFile为空时，post发送中出现问题，返回错误反馈
     	if ($zipFile == '') {
     		$error['reason'] = '上传失败';
     		return $error['code'] = 1;
     	}
     	$success = $this->up->upload($zipFile);
+        //如果上传成功，也就是ZipFile不为空
        	if ($success) {
     		$zip = new ZipArchive();
+            //解包操作，若成功则进入转存操作，若不成功，则返回失败
        		if ($zip->open('uploads/'.$this->up->getFileName()[0], ZIPARCHIVE::CREATE)) {
+                //$searchPath 需要遍历的文件夹绝对地址
        			$searchPath = $this->path.'/public/unzip/'.explode('.', explode('/', $zip->filename)[count(explode('/', $zip->filename))-1])[0].'/';
+                //$fileName 文件夹的名字
                 $fileName = explode('.', explode('/', $zip->filename)[count(explode('/', $zip->filename))-1])[0];
     			$zip->extractTo($this->path.'/public/unzip');
+                var_dump($this->path.'/public/unzip/'.$fileName.'/*');
+                chmod($this->path.'/public/unzip/'.$fileName, 0775);
     			$zip->close();
-
+                //如果这个文件夹在此绝对路径中
                 if (file_exists($searchPath)) {
-                    $this->unzipFileStructPath[$fileName] = $this->listDir($searchPath, array());
-                    foreach ($this->unzipFileStructPath as $TunnelName => $Source) { //遍历文档结构
+                    $this->unzipFileStructPath[$fileName] = $this->listDir($searchPath);
+                    //遍历文档结构
+                    foreach ($this->unzipFileStructPath as $TunnelName => $Source) { 
                         $database = explode('_', $TunnelName)[0];
                         $ExaminationTime = explode('_', $TunnelName)[1];
-                        foreach ($Source as $DiseaseFolder => $DiseaseFolderContent) {//进入其中一文件夹
+                        //进入其中一文件夹
+                        foreach ($Source as $DiseaseFolder => $DiseaseFolderContent) {
+                            //如果该文件夹中存在.txt文件则开始录入数据，若不存在则跳过这个文件夹
                             if (array_search($DiseaseFolder.$ExaminationTime.'.txt', $DiseaseFolderContent) == false) {
                                 continue;
                             }
                             $TextName = $DiseaseFolderContent[array_search($DiseaseFolder.$ExaminationTime.'.txt', $DiseaseFolderContent)];
                             $TextPath = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$TextName;
                             $TextContent = $this->readTheText($TextPath);
-                            foreach ($DiseaseFolderContent as $Mark => $PicsFolder) {//进入对应资源包
+                            //进入对应资源包
+                            foreach ($DiseaseFolderContent as $Mark => $PicsFolder) {
+                            //如果名称为字符串，则是每个病害对应的资源包，进入对应的资源包
                                 if (is_string($Mark)) {
+                                    //清除之前可能重复的变量
                                     if (isset($insertParameter)) {
                                         unset($insertParameter);
                                     }
+                                    //遍历这个资源包的内容，区分开内部红外图片（.bmp）与高清图片
                                     foreach ($PicsFolder as $key => $value) {
-                                        $picType = explode('.', $value);
+                                        $picType = explode('.', $value)[1];
                                         if ($picType == 'bmp') {
-                                            $insertParameter['InfrareVideoPath'] = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$Mark.'/'.$value;
+                                            $insertParameter['InfraredVideoPath'] = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$Mark.'/'.$value;
                                         }else{
                                             $insertParameter['HighDefinitionVideoPath'.($key+1)] = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$Mark.'/'.$value;
                                         }
                                     }
-                                    
+                                    var_dump($insertParameter);
                                     $TextMark = array_search($Mark, $TextContent['DiseaseId']);
+                                    //循环读取存放txt文件内容的变量，格式化之后sql需要的字段
                                     foreach ($TextContent as $Title => $Contents) {
                                         $insertParameter[$Title] = $Contents[$TextMark];
                                     }
-
                                     $insertParameter['PNGFile'] = 'unzip/'.$TunnelName.'/'.$DiseaseFolder.'/'.$Mark.'.png';
-                                    $requireDatabase = $this->originCreateDatabaseSqlString($database);
+                                    $requireDatabase = $this->requireOrCreateDatabase($database);
+                                    //失败则打印 失败 并继续下一次运行
                                     if ($requireDatabase == 0) {
-                                        return 0;
+                                        echo "此处请求或创建 $database 失败，执行下一条记录操作"."<br/>";
+                                        continue;
                                     }
-                                    $requireTable = $this->originCreateTableSqlString($database, explode('_', $TunnelName)[1]);
+                                    $requireTable = $this->requireOrCreateTable($database, explode('_', $TunnelName)[1]);
+                                    //失败则打印 失败 并继续下一次运行
                                     if ($requireTable == 0) {
-                                        return 0;
+                                        echo "此处请求或创建 ".explode('_', $TunnelName)[1]." 失败，执行下一条记录操作". "<br/>";
+                                        continue;
                                     }
                                     $insertSQLSuccess = $this->originInsertSqlString($database, $insertParameter, $DiseaseFolder, explode('_', $TunnelName)[1]);
+                                    //失败则打印 失败 并继续下一次运行
                                     if ($insertSQLSuccess == 0) {
-                                        return 0;
+                                        echo "此处插入失败，执行下一条记录操作". "<br/>";
+                                        continue;
                                     }
                                     $updateSQLSuccess = $this->updateTunnelInfo($database, $ExaminationTime);
+                                    //失败则打印 失败 并继续下一次运行
                                     if ($updateSQLSuccess == 0) {
                                         return 0;
                                     }
@@ -108,22 +141,23 @@ class UpLoad extends Controller
     	}
     }
 
-    public function listDir($dir, $parameter){
-        $dirStruct = $parameter;
-        if(is_dir($dir))
-        {
-            if ($dh = opendir($dir)) 
-            {
-                while (($file = readdir($dh)) !== false)
-                {
-                    if((is_dir($dir."/".$file)) && $file!="." && $file!=".." && $file!=".DS_Store")
-                    {
+    /**
+     * @param $dir 需要被遍历的文件路径
+     * 
+     * @return $dirStruct 返回该文件路径
+     *
+     * 以递归的方式，深度优先遍历该文件目录结构
+     */
+    public function listDir($dir){
+        $dirStruct = array();
+        if(is_dir($dir)){
+            if ($dh = opendir($dir)) {
+                while (($file = readdir($dh)) !== false){
+                    if((is_dir($dir."/".$file)) && $file!="." && $file!=".." && $file!=".DS_Store"){
                         $dirStruct[$file] = $this->listDir($dir."/".$file."/",array());
                     }
-                    else
-                    {
-                        if($file!="." && $file!=".."&& $file!=".DS_Store")
-                        {
+                    else{
+                        if($file!="." && $file!=".."&& $file!=".DS_Store"){
                             array_push($dirStruct, $file);
                         }
                     }
@@ -140,7 +174,7 @@ class UpLoad extends Controller
      * @return (array) $ProcessedTextContent 返回处理完成的Text信息字典
      * 
      * 接受参数后，读取该路径下的.txt文件
-     * 自动将读取后的变量处理成规则的字典变量
+     * 自动将读取后的变量处理成规则的数组变量（字典）
      */
     public function readTheText($TextPath){
         $TextHandler = fopen($TextPath, 'r');
@@ -151,22 +185,23 @@ class UpLoad extends Controller
         foreach ($TextOriginContent as $Col => $Content) {
             if ($Col == 0) {
                 foreach (explode(' ', $Content) as $key => $value) {
-                    $TextMixed[trim($value)] = array();                
+                    $TextMixed[trim($value)] = array();
                 }
             }else{
                 $TextContent[$Col] = explode(' ', $Content);
             }
         }
         $ProcessedTextContent = $TextMixed;
-        var_dump($ProcessedTextContent);
         $ColNum = 0;
+        var_dump($TextContent);
         foreach ($TextMixed as $TextTile => $array) {
             foreach ($TextContent as $TextCol => $value) {
-                var_dump($value);
                 if (!is_array($ProcessedTextContent[$TextTile])) {
                     $ProcessedTextContent[$TextTile] = array();
                 }
-                var_dump($ProcessedTextContent[$TextTile], $TextTile, $value[$ColNum],$ColNum);
+                if (trim($value[$ColNum]) == ' ' && trim($value[$ColNum]) == "\n") {
+                    continue;
+                }
                 array_push($ProcessedTextContent[$TextTile], trim($value[$ColNum]));
             }
             $ColNum ++;
@@ -177,13 +212,15 @@ class UpLoad extends Controller
     /**
      * @param (string) $database 传入需要入库的数据库名
      *
-     * @return (string) $return 返回是否能使用该数据库
+     * @return (string) $return 返回是否成功：0/1
      * 
      * 接受$database参数后，判断数据库服务器中是否存在此数据库
      * 若不存在则创建数据库并自动创建固定的表，若创建成功，则返回成功；若失败，则返回失败
      * 若存在则返回成功
+     *
+     * 若自动建库，在公共库中，该隧道的描述、经纬度等信息为默认数据，需要工作人员手动修改（1.0）
      */
-    public function originCreateDatabaseSqlString($database){
+    public function requireOrCreateDatabase($database){
         $where['TunnelId'] = $database;
         $exists = $this->dataCore->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '');
         if (count($exists) == 0) {
@@ -209,7 +246,6 @@ class UpLoad extends Controller
                     `Severity` int(4) unsigned DEFAULT NULL,
                     PRIMARY KEY (`ExaminationTime`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=gbk;";
-            var_dump($Sql);
             $success = $this->dataCore->sql('',$Sql) ;
             if ($success == 1) {
                 $insertSql = "INSERT INTO `RMM`.`tunnel_info` (`TunnelId`, `TunnelName`, `TunnelDescription`, `Longitude`, `Latitude`, `Mileage`, `PICsFilePath`) VALUES ('$database', '$database', '1.本项目起于约德高速公路召唤师峡谷路段, 2.修建单位：约德尔；监理单位：诺克萨斯；设计单位：符文大陆；竣工时间：2010-2-1', '104.085547', '30.562212', '2321', '0837yingxiuhuoshaopingsuidao02/Tunnel.jpg');";
@@ -258,14 +294,15 @@ class UpLoad extends Controller
 
     /**
      * @param (string) $table 传入需要入库的表名
+     * @param (string) $ExaminationTime 传入需要入库的检测时间
      *
-     * @return (string) $Sql 返回符合要求的SQL语句
+     * @return (string) $insertSuccess 返回是否成功：0/1
      * 
      * 接受$table参数后，判断数据库中是否存在此表
-     * 若不存在则返回创建表的SQL语句
-     * 若存在则返回空字符
+     * 若不存在则创建表创建成功返回1，失败返回0
+     * 若存在则返回1
      */
-    public function originCreateTableSqlString($database, $ExaminationTime){
+    public function requireOrCreateTable($database, $ExaminationTime){
         var_dump('asdfasdf');
         $Examination = str_split($ExaminationTime, 4);
         $date = str_split($Examination[1], 2);
@@ -278,7 +315,6 @@ class UpLoad extends Controller
 
         $where['ExaminationTime'] = $SearchFoundTime;
         $SearchResoult = $this->dataCore->getDataByTablenameAndDatabasename($database, 'tunnel_info', $where, '');
-        var_dump(count($SearchResoult));
         if (count($SearchResoult) == 1) {
             return 1;
         }else{
@@ -291,7 +327,7 @@ class UpLoad extends Controller
                 `HighDefinitionVideoPath1` varchar(500) DEFAULT NULL,
                 `HighDefinitionVideoPath2` varchar(500) DEFAULT NULL,
                 `HighDefinitionVideoPath3` varchar(500) DEFAULT NULL,
-                `InfrareVideoPath` varchar(500) DEFAULT NULL,
+                `InfraredVideoPath` varchar(500) DEFAULT NULL,
                 `PointCloudCrossSectionPath` varchar(500) DEFAULT NULL,
                 `PNGFile` varchar(500) NOT NULL,
                 PRIMARY KEY (`DiseaseID`),
@@ -335,6 +371,7 @@ class UpLoad extends Controller
                 `HighDefinitionVideoPath1` varchar(500) DEFAULT NULL,
                 `HighDefinitionVideoPath2` varchar(500) DEFAULT NULL,
                 `HighDefinitionVideoPath3` varchar(500) DEFAULT NULL,
+                `InfraredVideoPath` varchar(500) DEFAULT NULL,
                 `PNGFile` varchar(500) NOT NULL,
                  PRIMARY KEY (`DiseaseID`),
                 CONSTRAINT `".$ProcessExaminationTime."scratch_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
@@ -354,7 +391,6 @@ class UpLoad extends Controller
 
             foreach ($CreateTableSql as $key => $value) {
                 $success = $this->dataCore->sql($database, $value);
-                var_dump($success);
                 if ($success == 0) {
                     return 0;
                 }
@@ -371,12 +407,15 @@ class UpLoad extends Controller
     }
 
     /**
+     * @param (array) $database 传入目标数据库名称
      * @param (array) $data 传入需要入库的数据
+     * @param (array) $data 传入需要入库的数据类型（病害类型）
+     * @param (array) $ExaminationTime 传入需要入库数据的检测时间
      *
-     * @return (string) $Sql 返回符合要求的SQL语句
+     * @return (string) $insertDetailSuccess 返回是否成功：0/1
      * 
      * 接受$data参数后，判断数据库中此表内是否存在此数据
-     * 若不存在则返回插入的SQL语句
+     * 若不存在则自动建库、自动向配置文件录入添加相关配置
      * 若存在则返回空字符
      */
     public function originInsertSqlString($database, $data, $type, $ExaminationTime){
@@ -442,26 +481,26 @@ class UpLoad extends Controller
         var_dump("INSERT INTO `$database`.`".$ProcessExaminationTime.$tableName."_disease` ($insertIntoDiseaseDetailKey) VALUES ($insertIntoDiseaseDetailValue);");
 
         $exists = $this->dataCore->getDataByTablenameAndDatabasename($database, $ProcessExaminationTime.$tableName.'_disease', $where, '');
-        var_dump(count($exists));
         $insertDetailSuccess = 1;
         if (count($exists) == 0) {
             $insertDetailSuccess = $this->dataCore->sql($database, "INSERT INTO `$database`.`".$ProcessExaminationTime.$tableName."_disease` ($insertIntoDiseaseDetailKey) VALUES ($insertIntoDiseaseDetailValue);");
-            var_dump($insertDetailSuccess);
         }
 
         return $insertDetailSuccess;
     }
 
     /**
-     * @param (array) $originStrings 传入需要入库的原始SQL语句
+     * @param (array) $database 传入目标数据库名
+     * @param (array) $ExaminationTime 传入需要入库的检测时间
      *
-     * @return (string) $Sql 返回符合要求的SQL语句
+     * @return (string) $updateSuccess 返回是否更新成功
      * 
      * 接受$data参数后，判断数据库中此表内是否存在此数据
      * 若不存在则返回插入的SQL语句
      * 若存在则返回空字符
      */
     public function updateTunnelInfo($database, $ExaminationTime){
+        var_dump('zzzzzzzzzzzzz');
         $Examination = str_split($ExaminationTime, 4);
         $date = str_split($Examination[1], 2);
         $day = $date[1];
@@ -472,11 +511,13 @@ class UpLoad extends Controller
 
         $tables = array("crack", "leak", "drop", "scratch", "exception");
         foreach ($tables as $key => $value) {
-            $countSql = "select count(*) from `".$database."`.`".$ProcessExaminationTime.$value."`;";
-            $count[$value] = $this->dataCore->Sql($database, $countSql);
+            $countSql = "select count(*) as count from `".$database."`.`".$ProcessExaminationTime.$value."_disease`;";
+            var_dump($countSql);
+            $count[$value] = $this->dataCore->countSql($database, $countSql)[0]['count'];
         }
-        
+        var_dump($count);
         $updateSql = "UPDATE `$database`.`tunnel_info` SET `CountofCrack`='".$count['crack']."', `CountofLeak`='".$count['leak']."', `CountofDrop`='".$count['drop']."', `CountofScratch`='".$count['scratch']."', `CountofException`='".$count['exception']."' WHERE `ExaminationTime`='".$SearchFoundTime."';";
+        var_dump($updateSql);
 
         $updateSuccess = $this->dataCore->Sql($database, $updateSql);
 

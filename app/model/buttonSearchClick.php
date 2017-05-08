@@ -18,8 +18,7 @@ class buttonSearchClick extends Model
         foreach ($post['TunnelInfo']['ExaminationTime'] as $num => $ExaminationTime) {
             foreach ($post['Filter'] as $type => $choose) {
 
-                if ($choose['Select'] == 1 && $type != 'Exception') {
-
+                if ($choose['Select'] == 1) {
                     foreach ($choose as $chooseType => $range) {
                         if ($chooseType != 'Select') {
                             foreach ($range as $name => $value) {
@@ -36,35 +35,40 @@ class buttonSearchClick extends Model
                                 }else{
                                     $where[$type . $name] = $value;
                                 }
-                                
                             }
                         }
                     }
-                    $diseaseSelected = $this->theDatas->rangeSearchForOkClick($database, strtolower($type).'_disease', $where, $ExaminationTime, '');
-                    if ($diseaseSelected == 0) {
-                        continue;
-                    }
-                    unset($where);
-                    $selectDiseaseNum = 0;
-                    foreach ($diseaseSelected as $diseaseNum => $diseaseValue) {                    
-                        $where['DiseaseID'] = $diseaseValue->DiseaseID;
-                        $disease[$type][$diseaseNum] = $this->theDatas->getDataByTablenameAndDatabasename($database, 'disease', $where == NULL? '':$where, '')[0];
-                        unset($where);
-
-                        if ($disease[$type][$diseaseNum]->Mileage > $post['EndMileage'] || $disease[$type][$diseaseNum]->Mileage < $post['StartMileage']) {
+                    if (isset($where) || $type == 'Exception') {
+                        $diseaseSelected = $type == 'Exception' ? $this->theDatas->rangeSearchForOkClick($database, strtolower($type).'_disease', '', $ExaminationTime, '') : $this->theDatas->rangeSearchForOkClick($database, strtolower($type).'_disease', $where, $ExaminationTime, '');
+                        if (count($diseaseSelected) == 0) {
                             continue;
                         }
-                        $diseaseValue->DiseasePosition['Mileage'] = $disease[$type][$diseaseNum]->Mileage;
-                        $diseaseValue->DiseasePosition['Position'] = $disease[$type][$diseaseNum]->Position;
-                        $disease[$type][$diseaseNum]->PNGURL = $diseaseValue->PNGFile;
-                        unset($disease[$type][$diseaseNum]->Mileage);
-                        unset($disease[$type][$diseaseNum]->Position);
-                        unset($diseaseValue->PNGFile);
+                        
+                        $selectDiseaseNum = 0;
+                        foreach ($diseaseSelected as $diseaseNum => $diseaseValue) {
+                            if (isset($where)) {
+                                unset($where); 
+                            }                
+                            $where['DiseaseID'] = $diseaseValue->DiseaseID;
+                            $disease[$type][$diseaseNum] = $this->theDatas->getDataByTablenameAndDatabasename($database, 'disease', $where == NULL? '':$where, '')[0];
 
-                        $disease[$type][$diseaseNum]->Info = $diseaseValue;
-                        $diseases[$type][isset($diseases[$type])?(count($diseases[$type]) ):0] = $disease[$type][$diseaseNum];
-                        $selectDiseaseNum ++;
-                    }
+                            unset($where);
+
+                            if ($disease[$type][$diseaseNum]->Mileage >= $post['EndMileage'] || $disease[$type][$diseaseNum]->Mileage < $post['StartMileage']) {
+                                continue;
+                            }
+                            $diseaseValue->DiseasePosition['Mileage'] = $disease[$type][$diseaseNum]->Mileage;
+                            $diseaseValue->DiseasePosition['Position'] = $disease[$type][$diseaseNum]->Position;
+                            $disease[$type][$diseaseNum]->PNGURL = $diseaseValue->PNGFile;
+                            unset($disease[$type][$diseaseNum]->Mileage);
+                            unset($disease[$type][$diseaseNum]->Position);
+                            unset($diseaseValue->PNGFile);
+
+                            $disease[$type][$diseaseNum]->Info = $diseaseValue;
+                            $diseases[$type][isset($diseases[$type])?(count($diseases[$type]) ):0] = $disease[$type][$diseaseNum];
+                            $selectDiseaseNum ++;
+                        }
+                    } 
                 }   
             }
         }
@@ -80,7 +84,6 @@ class buttonSearchClick extends Model
         }
     	
     	$diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
-        var_dump($diseaseInfo);
     	return $diseaseInfo;
     }
 }

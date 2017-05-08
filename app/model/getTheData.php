@@ -20,6 +20,15 @@ class getTheData extends Model
         return $success == NULL ? 0 : 1;
     }
 
+    public function countSql($database, $sql){
+
+        $pdo = new PDO('mysql:host=123.206.226.28;dbname='.$database.';port=3306','root','');
+        $pdo->exec('set names utf8');
+
+        $success = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        return $success == NULL ? 0 : $success;
+    }
+
     public function countTheDetails($database, $table, $wheres = '', $time = ''){
         $databaseName = $this->databaseName($database);
         $tableName = $time == '' ? $table : $this->tableName($time, $table);
@@ -148,7 +157,7 @@ class getTheData extends Model
             }
         }
         $wheres = $whereCol == '' ? $setTheRange : $setTheRange . ' and ' . $this->where($whereCol) ;
-        $range = $wheres == '' ? 0 : DB::connection($databaseName)->select('select * from ' . $tableName . ' where ' . $wheres);
+        $range = $wheres == '' ? DB::connection($databaseName)->select('select * from ' . $tableName) : DB::connection($databaseName)->select('select * from ' . $tableName . ' where ' . $wheres);
         return $range;
     }
 
