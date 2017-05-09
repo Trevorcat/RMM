@@ -19,15 +19,22 @@ class appOnLoad extends Model
         }
         $where['OpenId'] = $post['UserInfo']['openId'];
         $data = $this->theDatas->getDataByTablenameAndDatabasename('', 'authority', $where,'');
-        if ($data[0]->OpenId == '000000') {
+
+        if (count($data) == 0) {
             $return['IsTourist'] = 1;
+            unset($where);
+            $where['OpenId'] = '000000';
+            $data = $this->theDatas->getDataByTablenameAndDatabasename('', 'authority', $where,'');
+            foreach ($data as $key => $value) {
+                $return['TunnelID'][$key] = $value->TunnelId;
+            }
+            return $return;
         }else{
             $return['IsTourist'] = 0;
+            foreach ($data as $key => $value) {
+                $return['TunnelID'][$key] = $value->TunnelId;
+            }
+            return $return;
         }
-
-        foreach ($data as $key => $value) {
-            $return['TunnelID'][$key] = $value->TunnelId;
-        }
-        return $return;
     }
 }
