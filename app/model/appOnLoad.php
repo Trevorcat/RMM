@@ -19,11 +19,6 @@ class appOnLoad extends Model
         }
         $where['OpenId'] = $post['UserInfo']['openId'];
         $data = $this->theDatas->getDataByTablenameAndDatabasename('', 'authority', $where,'');
-        var_dump($data);
-        if (count($data) == 0) {
-            $error['reason'] = 'login false';
-            return $error['code'] = 0;
-        }
         if ($data[0]->OpenId == '000000') {
             $return['IsTourist'] = 1;
         }else{
