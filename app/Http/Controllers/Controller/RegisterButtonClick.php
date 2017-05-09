@@ -23,12 +23,13 @@ class RegisterButtonClick extends Controller
             $error['error'] = 1;
             return $error['reason'] = 'There is no \'InviteCode\'';
         }
+        $confirm = $this->confirmInviteCode($request);
     	$company = $this->getCompanyName($request);
-    	$confirm = $this->confirmInviteCode($request);
+        var_dump($company, $confirm);
         if (!is_string($company) && !is_string($confirm)) {
             $TunnelID['Authority']['IsTourist'] = 1; 
             return $TunnelID;
-        }else if ($company == $confirm) {
+        }else if ($company === $confirm) {
     		$authority = $this->getAuthority($request);
     	}else{
     		$TunnelID['Authority']['IsTourist'] = 1; 
