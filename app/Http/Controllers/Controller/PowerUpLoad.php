@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use ZipArchive;
 
-class UpLoad extends Controller
+class PowerUpLoad extends Controller
 {
     /**
     *   $up                     upLoad的指针
@@ -45,7 +45,6 @@ class UpLoad extends Controller
 
     public function upload(Request $request){
     	$zipFile = $request->all();
-
         //当$zipFile为空时，post发送中出现问题，返回错误反馈
     	if ($zipFile == '') {
     		$error['reason'] = '上传失败';
@@ -62,12 +61,8 @@ class UpLoad extends Controller
                 //$fileName 文件夹的名字
                 $fileName = explode('.', explode('/', $zip->filename)[count(explode('/', $zip->filename))-1])[0];
     			$zip->extractTo($this->path.'/public/unzip');
-                // var_dump($this->path.'/public/unzip/'.$fileName.'/*');
-                $chmodSuccess = chmod($this->path.'/public/unzip/'.$fileName, 0775);
-                if ($chmodSuccess) {
-                    echo "文件授权失败";
-                    return 0;
-                }
+                var_dump($this->path.'/public/unzip/'.$fileName.'/*');
+                chmod($this->path.'/public/unzip/'.$fileName, 0775);
     			$zip->close();
                 //如果这个文件夹在此绝对路径中
                 if (file_exists($searchPath)) {
@@ -76,6 +71,10 @@ class UpLoad extends Controller
                     foreach ($this->unzipFileStructPath as $TunnelName => $Source) { 
                         $database = explode('_', $TunnelName)[0];
                         $ExaminationTime = explode('_', $TunnelName)[1];
+                        $deleteSuccess = $this->deleteTheTables($database, $ExaminationTime);
+                        if ($deleteSuccess == 0) {
+                        	return 0;
+                        }
                         //进入其中一文件夹
                         foreach ($Source as $DiseaseFolder => $DiseaseFolderContent) {
                             //如果该文件夹中存在.txt文件则开始录入数据，若不存在则跳过这个文件夹
@@ -268,7 +267,7 @@ class UpLoad extends Controller
                     ) ENGINE=InnoDB DEFAULT CHARSET=gbk;";
             $success = $this->dataCore->sql('',$Sql) ;
             if ($success == 1) {
-                $insertSql = "INSERT INTO `RMM`.`tunnel_info` (`TunnelId`, `TunnelName`, `TunnelDescription`, `Longitude`, `Latitude`, `Mileage`, `PICsFilePath`) VALUES ('$database', '$database', '1.本项目起于  , 2.修建单位： ；监理单位： ；设计单位： ；竣工时间： ', ' ', ' ', ' ', '0837yingxiuhuoshaopingsuidao02/Tunnel.jpg');";
+                $insertSql = "INSERT INTO `RMM`.`tunnel_info` (`TunnelId`, `TunnelName`, `TunnelDescription`, `Longitude`, `Latitude`, `Mileage`, `PICsFilePath`) VALUES ('$database', '$database', '1.本项目起于约德高速公路召唤师峡谷路段, 2.修建单位： ；监理单位： ；设计单位： ；竣工时间： ', ' ', ' ', ' ', '0837yingxiuhuoshaopingsuidao02/Tunnel.jpg');";
                 $insertSuccess = $this->dataCore->sql('', $insertSql);
                 if ($insertSuccess == 0) {
                     return 0;
@@ -539,6 +538,49 @@ class UpLoad extends Controller
         }else{
             return 0;
         }
+    }
+
+    public function deleteTheTables($database, $ExaminationTime){
+    	$Examination = str_split($ExaminationTime, 4);
+        $date = str_split($Examination[1], 2);
+        $day = $date[1];
+        $month = $date[0];
+        $year = $Examination[0];
+        $SearchFoundTime = $year . '-' . $month . '-' . $day;
+        $ProcessExaminationTime = $year . '_' . $month . '_' . $day . '_';
+
+        $existsDatabase = $this->requireOrCreateDatabase($database);
+
+        if ($existsDatabase == 0) {
+        	echo "选择数据库失败";
+        	return 0;
+        }
+
+    	$deleteTheExaminationSql = "DELETE FROM ".$database.".tunnel_info where ExaminationTime = ".$SearchFoundTime;
+    	$success = $this->dataCore->sql($deleteTheExaminationSql);
+    	if ($success == 0) {
+    		return 0;
+    	}
+
+    	$DROPTableSql[0] = "DROP TABLE IF EXISTS `".$ProcessExaminationTime."crack_disease` ";
+
+        $DROPTableSql[1] = "DROP TABLE IF EXISTS `".$ProcessExaminationTime."leak_disease`";
+
+        $DROPTableSql[2] = "DROP TABLE IF EXISTS `".$ProcessExaminationTime."drop_disease`";
+
+        $DROPTableSql[3] = "DROP TABLE IF EXISTS `".$ProcessExaminationTime."scratch_disease`";
+
+        $DROPTableSql[4] = "DROP TABLE IF EXISTS `".$ProcessExaminationTime."exception_disease`";
+
+        foreach ($DROPTableSql as $key => $value) {
+            $success = $this->dataCore->sql($database, $value);
+            if ($success == 0) {
+                return 0;
+            }
+        }
+
+        return 1;
+
     }
 
 }
