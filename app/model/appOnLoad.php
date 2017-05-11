@@ -19,7 +19,7 @@ class appOnLoad extends Model
         }
         $where['OpenId'] = $post['UserInfo']['openId'];
         $data = $this->theDatas->getDataByTablenameAndDatabasename('', 'authority', $where,'');
-
+        var_dump($where);
         if (count($data) == 0) {
             $return['IsTourist'] = 1;
             unset($where);
