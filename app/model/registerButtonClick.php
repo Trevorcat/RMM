@@ -26,7 +26,6 @@ class registerButtonClick extends Model
         $post = $request->all();
     	$where['InviteCode'] = $post['InviteCode'];
     	$data = $this->theDatas->getDataByTablenameAndDatabasename('', 'invite_code_info', $where, '');
-        var_dump($data);
     	if (count($data) == 0) {
     		return $confirm = 0;
     	}else{
@@ -37,12 +36,9 @@ class registerButtonClick extends Model
             if ($deleteSuccess == 0 || $insertUserInfoSuccess == 0) {
                 return 0;
             }
-            var_dump('asdfasdf');
             $tunnels = $this->theDatas->getDataByTablenameAndDatabasename('', 'invite_code', $where, '');
-            var_dump($tunnels);
             foreach ($tunnels as $key => $value) {
                 $insertSql = "INSERT INTO `RMM`.`authority` (`OpenId`, `TunnelId`, `IsChecked`) VALUES ('".$post['UserInfo']['openId']."', '".$value->TunnelId."', '0');";
-                var_dump($insertSql);
                 $insertSql = $this->theDatas->sql('RMM',$insertSql);
                 if ($insertSql == 0) {
                     return 0;

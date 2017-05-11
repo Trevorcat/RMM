@@ -25,7 +25,6 @@ class RegisterButtonClick extends Controller
         }
         $confirm = $this->confirmInviteCode($request);
     	$company = $this->getCompanyName($request);
-        var_dump($company, $confirm);
         if (!is_string($company) && !is_string($confirm)) {
             $TunnelID['Authority']['IsTourist'] = 1; 
             return $TunnelID;
