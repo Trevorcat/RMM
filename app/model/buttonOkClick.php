@@ -76,14 +76,14 @@ class buttonOkClick extends Model
             $counts = 0;
             foreach ($diseases as $types => $diseaseIn) {
                 foreach ($diseaseIn as $key => $value) {
-                    $resoult[$counts] = $value;
+                    $resout[$counts] = $value;
                     $counts ++;
                 }
                  
             }
         }
     	
-    	$diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
+    	$diseaseInfo['DiseaseInfo'] = isset($resout) ? $resout : 'Nothing been searched by the select';
         // var_dump($diseaseInfo);
     	return $diseaseInfo;
     }

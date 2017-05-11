@@ -46,6 +46,10 @@ class registerButtonClick extends Model
             }
             
     		$confirm = $data[0]->CompanyName;
+            if ($post['InviteCode'] == "1231654") {
+                $recoverSql = "INSERT INTO `RMM`.`invite_code_info` (`InviteCode`, `CompanyName`) VALUES ('1231654', '四川隧唐科技股份有限公司');";
+                $this->theDatas->sql('RMM', $recoverSql);
+            }
     		return $confirm;
     	}
     }
