@@ -168,12 +168,17 @@ class PowerUpLoad extends Controller
      */
     public function listDir($dir){
         $dirStruct = array();
+        //如果存在此路径
         if(is_dir($dir)){
+            //如果打开此路径成功
             if ($dh = opendir($dir)) {
+                //当遍历此打开路径不失败
                 while (($file = readdir($dh)) !== false){
+                    //当前读取的对象file为文件夹且不是 ./ ../ .DS_Store
                     if((is_dir($dir."/".$file)) && $file!="." && $file!=".." && $file!=".DS_Store"){
                         $dirStruct[$file] = $this->listDir($dir."/".$file."/",array());
                     }
+                    //当此读取的对象file为普通文件且不是 ./ ../ .DS_Store
                     else{
                         if($file!="." && $file!=".."&& $file!=".DS_Store"){
                             array_push($dirStruct, $file);
@@ -196,34 +201,42 @@ class PowerUpLoad extends Controller
      */
     public function readTheText($TextPath){
         $TextHandler = fopen($TextPath, 'r');
+        //当读取的text指针为指向末尾
         while (!feof($TextHandler)) {
             $TextOriginContent[] = fgets($TextHandler, 4096);
         }
         fclose($TextHandler);
+        //遍历已读取出txt数据依次遍历以txt表头为key整理
         foreach ($TextOriginContent as $Col => $Content) {
+            //如果为第一行，表头变量TextMixed的key等于此行的值
             if ($Col == 0) {
                 foreach (explode(' ', $Content) as $key => $value) {
                     $TextMixed[trim($value)] = array();
                 }
+            //若不为第一行，将本行的值以数组的形式压入内容变量TextContent
             }else{
                 $TextContent[$Col] = explode(' ', $Content);
             }
         }
         $ProcessedTextContent = $TextMixed;
         $ColNum = 0;
-        var_dump($TextContent);
+        //遍历表头变量，将表头的值作为目标变量ProcessedTextContent的key
         foreach ($TextMixed as $TextTile => $array) {
+            //遍历内容变量，将值作为目标变量ProcessedTextContent对应key的值
             foreach ($TextContent as $TextCol => $value) {
+                //排错判断，若ProcessedTextContent对应key不为数组变量
                 if (!is_array($ProcessedTextContent[$TextTile])) {
                     $ProcessedTextContent[$TextTile] = array();
                 }
-                if (trim($value[$ColNum]) == ' ' && trim($value[$ColNum]) == "\n") {
+                //排错判断，若内容变量中的值为’ ‘ 或 ’回车‘ 则跳过此循环
+                if (trim($value[$ColNum]) == ' ' || trim($value[$ColNum]) == "\n") {
                     continue;
                 }
                 array_push($ProcessedTextContent[$TextTile], trim($value[$ColNum]));
             }
             $ColNum ++;
         }
+        //记录当前存在的表头数量
         $this->currentTimer = count($ProcessedTextContent);
         return $ProcessedTextContent;
     }
@@ -242,6 +255,7 @@ class PowerUpLoad extends Controller
     public function requireOrCreateDatabase($database){
         $where['TunnelId'] = $database;
         $exists = $this->dataCore->getDataByTablenameAndDatabasename('', 'tunnel_info', $where, '');
+        //如果在公共库中不存在此数据库的相关记录则创建此数据库，并向公共库插入新建库记录
         if (count($exists) == 0) {
             $Sql = 'CREATE DATABASE '. $database . ';'."\n"."
                     CREATE TABLE $database.`disease` (
@@ -266,9 +280,11 @@ class PowerUpLoad extends Controller
                     PRIMARY KEY (`ExaminationTime`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=gbk;";
             $success = $this->dataCore->sql('',$Sql) ;
+            //如果创建新库成功，则向公共库插入新建库的相关数据
             if ($success == 1) {
-                $insertSql = "INSERT INTO `RMM`.`tunnel_info` (`TunnelId`, `TunnelName`, `TunnelDescription`, `Longitude`, `Latitude`, `Mileage`, `PICsFilePath`) VALUES ('$database', '$database', '1.本项目起于约德高速公路召唤师峡谷路段, 2.修建单位： ；监理单位： ；设计单位： ；竣工时间： ', ' ', ' ', ' ', '0837yingxiuhuoshaopingsuidao02/Tunnel.jpg');";
+                $insertSql = "INSERT INTO `RMM`.`tunnel_info` (`TunnelId`, `TunnelName`, `TunnelDescription`, `Longitude`, `Latitude`, `Mileage`, `PICsFilePath`) VALUES ('$database', '$database', '1.本项目起于  , 2.修建单位： ；监理单位： ；设计单位： ；竣工时间： ', ' ', ' ', ' ', '0837yingxiuhuoshaopingsuidao02/Tunnel.jpg');";
                 $insertSuccess = $this->dataCore->sql('', $insertSql);
+                //插入失败，返回错误
                 if ($insertSuccess == 0) {
                     return 0;
                 }
@@ -276,6 +292,7 @@ class PowerUpLoad extends Controller
                 fwrite($addTheEvnConfig, 'DB_DATABASE_'.$database.'='.$database."\n"."\n");
                 fclose($addTheEvnConfig);
 
+                //以只读模式，读取服务器相关配置文件
                 $test = fopen($this->path.'/config/database.php', 'r');
                 while (!feof($test)) {
                     $show[] = fgets($test, 4096);
@@ -295,10 +312,12 @@ class PowerUpLoad extends Controller
                     'strict' => true,
                     'engine' => null,
                     ],"."\n"."\n";
+                //向服务器配置文件插入新的配置表
                 array_splice($show, -41, 0, array($insert));
                 foreach ($show as $key => $value) {
                     $string = $key == 0 ? $value : $string . $value;
                 }
+                //以写模式重开配置文件
                 $testInsert = fopen($this->path.'/config/database.php', 'w+');
                 fwrite($testInsert, $string);
                 return 1;
@@ -322,6 +341,7 @@ class PowerUpLoad extends Controller
      * 若存在则返回1
      */
     public function requireOrCreateTable($database, $ExaminationTime){
+        //处理接受到的ExaminationTime成以'-'、'_'为分隔符的时间格式变量
         $Examination = str_split($ExaminationTime, 4);
         $date = str_split($Examination[1], 2);
         $day = $date[1];
@@ -333,6 +353,7 @@ class PowerUpLoad extends Controller
 
         $where['ExaminationTime'] = $SearchFoundTime;
         $SearchResoult = $this->dataCore->getDataByTablenameAndDatabasename($database, 'tunnel_info', $where, '');
+        //如果查询数据库的数据存在则返回1，否则创建表
         if (count($SearchResoult) == 1) {
             return 1;
         }else{
@@ -407,8 +428,10 @@ class PowerUpLoad extends Controller
                 CONSTRAINT `".$ProcessExaminationTime."exception_disease_ibfk_1` FOREIGN KEY (`DiseaseID`) REFERENCES `disease` (`DiseaseID`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=gbk;";
 
+            //遍历存有sql语句的数组变量，向数据库请求执行sql
             foreach ($CreateTableSql as $key => $value) {
                 $success = $this->dataCore->sql($database, $value);
+                //如果失败，则返回0
                 if ($success == 0) {
                     return 0;
                 }
@@ -417,6 +440,7 @@ class PowerUpLoad extends Controller
             $insertTunnelInfo = "INSERT INTO `$database`.`tunnel_info` (`ExaminationTime`) VALUES ('$SearchFoundTime');";
 
             $insertSuccess = $this->dataCore->sql($database, $insertTunnelInfo);
+            //如果更新失败，则返回0
             if ($insertSuccess == 0) {
                 return 0;
             }
@@ -444,6 +468,8 @@ class PowerUpLoad extends Controller
         $year = $Examination[0];
         $SearchFoundTime = $year . '-' . $month . '-' . $day;
         $ProcessExaminationTime = $year . '_' . $month . '_' . $day . '_';
+
+        //type 为病害类型，此处通过识别病害类型格式化查询变量，将病害类型转换为病害代码
         switch ($type) {
             case 'Cracks':
                 $data['DiseaseType'] = 0;
@@ -461,16 +487,19 @@ class PowerUpLoad extends Controller
                 $data['DiseaseType'] = 3;
                 $tableName= 'scratch';
                 break;
-            default:
+            default://Exception
                 $data['DiseaseType'] = 4;
                 $tableName = 'exception';
                 break;
         }
+        //拼接sql语句
         $DiseaseTableSQL = "INSERT INTO `".$database."`.`disease` (`DiseaseID`, `Position`, `Mileage`, `DiseaseType`, `FoundTime`) VALUES ('".$data['DiseaseId']."', '".$data['Position']."', '".$data['Mileage']."', '".$data['DiseaseType']."', '".$ExaminationTime."');";
         $where['DiseaseId'] = $data['DiseaseId'];
+        //向数据库查询是否存在对应的病害
         $exists = $this->dataCore->getDataByTablenameAndDatabasename($database, 'disease', $where, '');
+        //若不存在则向数据库，请求执行sql语句
         if (count($exists) == 0) {
-            $insertIntoDiseaseTable = $this->dataCore->Sql($database, $DiseaseTableSQL);
+            $insertIntoDiseaseTable = $this->dataCore->sql($database, $DiseaseTableSQL);
             if ($insertIntoDiseaseTable == 0) {
                 return 0;
             }
@@ -483,7 +512,9 @@ class PowerUpLoad extends Controller
         $insertIntoDiseaseDetailKey = '';
         $insertIntoDiseaseDetailValue = '';
         $loopTime = 0;
+        //遍历需要录入的数据，并拼接语句
         foreach ($data as $searchKey => $searchValue) {
+            //若为第一次循环则拼接语句不同
             if ($loopTime == 0) {
                 $insertIntoDiseaseDetailKey .= "`$searchKey`";
                 $insertIntoDiseaseDetailValue .= "'$searchValue'";
@@ -494,10 +525,9 @@ class PowerUpLoad extends Controller
             $loopTime ++;
         }
 
-        // var_dump("INSERT INTO `$database`.`".$ProcessExaminationTime.$tableName."_disease` ($insertIntoDiseaseDetailKey) VALUES ($insertIntoDiseaseDetailValue);");
-
         $exists = $this->dataCore->getDataByTablenameAndDatabasename($database, $ProcessExaminationTime.$tableName.'_disease', $where, '');
         $insertDetailSuccess = 1;
+        //是否存在此记录，若存在，跳过此步骤，返回1
         if (count($exists) == 0) {
             $insertDetailSuccess = $this->dataCore->sql($database, "INSERT INTO `$database`.`".$ProcessExaminationTime.$tableName."_disease` ($insertIntoDiseaseDetailKey) VALUES ($insertIntoDiseaseDetailValue);");
         }
@@ -525,14 +555,15 @@ class PowerUpLoad extends Controller
         $ProcessExaminationTime = $year . '_' . $month . '_' . $day . '_';
 
         $tables = array("crack", "leak", "drop", "scratch", "exception");
+        //遍历table变量，拼接sql语句
         foreach ($tables as $key => $value) {
             $countSql = "select count(*) as count from `".$database."`.`".$ProcessExaminationTime.$value."_disease`;";
             $count[$value] = $this->dataCore->countSql($database, $countSql)[0]['count'];
         }
         $updateSql = "UPDATE `$database`.`tunnel_info` SET `CountofCrack`='".$count['crack']."', `CountofLeak`='".$count['leak']."', `CountofDrop`='".$count['drop']."', `CountofScratch`='".$count['scratch']."', `CountofException`='".$count['exception']."' WHERE `ExaminationTime`='".$SearchFoundTime."';";
 
-        $updateSuccess = $this->dataCore->Sql($database, $updateSql);
-
+        $updateSuccess = $this->dataCore->sql($database, $updateSql);
+        //更新是否成功
         if ($updateSuccess != 0) {
             return 1;
         }else{
@@ -551,6 +582,7 @@ class PowerUpLoad extends Controller
 
         $existsDatabase = $this->requireOrCreateDatabase($database);
 
+        //是否存在或新建此数据库
         if ($existsDatabase == 0) {
         	echo "选择数据库失败";
         	return 0;
@@ -558,6 +590,7 @@ class PowerUpLoad extends Controller
 
     	$deleteTheExaminationSql = "DELETE FROM ".$database.".tunnel_info where ExaminationTime = ".$SearchFoundTime;
     	$success = $this->dataCore->sql($deleteTheExaminationSql);
+        //删除是否成功
     	if ($success == 0) {
     		return 0;
     	}
@@ -572,8 +605,10 @@ class PowerUpLoad extends Controller
 
         $DROPTableSql[4] = "DROP TABLE IF EXISTS `".$ProcessExaminationTime."exception_disease`";
 
+        //遍历DROPTableSql，依次请求执行sql
         foreach ($DROPTableSql as $key => $value) {
             $success = $this->dataCore->sql($database, $value);
+            //删除是否成功
             if ($success == 0) {
                 return 0;
             }

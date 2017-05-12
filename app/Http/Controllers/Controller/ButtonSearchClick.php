@@ -5,6 +5,20 @@ namespace App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+/**
+ * @param Request request 接受来自外部的请求类
+ * 
+ * @var array post 存放外部请求的数据
+ *      array error 存放错误信息
+ *
+ * @return array theDisease 存放查询到的结果
+ *
+ * 此接口接受来自外部post请求并接受json数据，将自动整理条件等向数据库请求数据并返回
+ *
+ * @author 陈科杰 15520446187 admin@trevorscat.com 
+ * @version 1.1.1.20170506
+ */
+
 class ButtonSearchClick extends Controller
 {
     //
