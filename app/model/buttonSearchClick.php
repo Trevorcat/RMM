@@ -142,7 +142,7 @@ class buttonSearchClick extends Model
             }
         }
     	//result变量是否被申明，若存在则赋值给diseaseInfo['DiseaseInfo']，若内存中不存在，则返回错误信息
-    	$diseaseInfo['DiseaseInfo'] = isset($resoult) ? $resoult : 'Nothing been searched by the select';
+    	$diseaseInfo['DiseaseInfo'] = isset($result) ? $result : NULL;
     	return $diseaseInfo;
     }
 }

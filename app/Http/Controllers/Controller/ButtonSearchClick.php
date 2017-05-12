@@ -43,7 +43,10 @@ class ButtonSearchClick extends Controller
             return $error['reason'] = 'There\'s no \'Filter\' in POST';
         }else{
             $theDisease['DiseasesInfo'] = $this->buttonSearchClick->getTheDisease($post);
-            // var_dump($theDisease);
+            //如果查询结果为空，则返回错误报告
+            if ($theDisease['DiseasesInfo']['DiseasesInfo'] == NULL) {
+                $error['code'] = 1;
+               
             return $theDisease;
         }
     }
