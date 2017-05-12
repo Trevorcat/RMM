@@ -50,7 +50,7 @@ class ButtonOkClick extends Controller
         }else{
             $theDisease['DiseasesInfo'] = $this->buttonOkClick->getTheDisease($post);
             //如果查询结果为空，则返回错误报告
-            if ($theDisease['DiseasesInfo']['DiseasesInfo'] == NULL) {
+            if ($theDisease['DiseasesInfo']['DiseaseInfo'] == NULL) {
                 $error['code'] = 1;
                 return $error['reason'] = 'Can not search anything by the Filter';
             }
