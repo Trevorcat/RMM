@@ -29,23 +29,31 @@ class ButtonSearchClick extends Controller
 
     public function returnDiseases(Request $request){
     	$post = $request->json()->all();
+        //在接受的请求数据中如果不存在['TunnelInfo']['TunnelId']则返回错误
         if (!isset($post['TunnelInfo']['TunnelId'])) {
             $error['error'] = 1;
             $error['reason'] = 'There\'s no \'TunnelInfo => TunnelID\' in POST';
             return $error;
-        }else if(!isset($post['StartMileage'])){
+        }
+        //在接受的请求数据中如果不存在['StartMileage']则返回错误
+        else if(!isset($post['StartMileage'])){
             $error['error'] = 1;
             $error['reason'] = 'There\'s no \'StartMileage\' in POST';
             return $error;
-        }else if (!isset($post['EndMileage'])) {
+        }
+        //在接受的请求数据中如果不存在['EndMileage']则返回错误
+        else if (!isset($post['EndMileage'])) {
             $error['error'] = 1;
             $error['reason'] = 'There\'s no \'EndMileage\' in POST';
             return $error;
-        }else if (!isset($post['Filter'])) {
+        }
+        //在接受的请求数据中如果不存在['Filter']则返回错误
+        else if (!isset($post['Filter'])) {
             $error['error'] = 1;
             $error['reason'] = 'There\'s no \'Filter\' in POST';
             return $error;
-        }else{
+        }
+        else{
             $theDisease['DiseasesInfo'] = $this->buttonSearchClick->getTheDisease($post);
             //如果查询结果为空，则返回错误报告
             if ($theDisease['DiseasesInfo']['DiseaseInfo'] == NULL) {
@@ -53,7 +61,6 @@ class ButtonSearchClick extends Controller
                 $error['reason'] = 'Can not search anything by the Filter';
                 return $error;
             }
-               
             return $theDisease;
         }
     }

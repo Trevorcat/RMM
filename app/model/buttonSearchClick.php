@@ -135,14 +135,14 @@ class buttonSearchClick extends Model
             $counts = 0;
             foreach ($diseases as $types => $diseaseIn) {
                 foreach ($diseaseIn as $key => $value) {
-                    $resoult[$counts] = $value;
+                    $result[$counts] = $value;
                     $counts ++;
                 }
                  
             }
         }
     	//result变量是否被申明，若存在则赋值给diseaseInfo['DiseaseInfo']，若内存中不存在，则返回错误信息
-    	$diseaseInfo['DiseaseInfo'] = isset($result) ? $result : NULL;
+        $diseaseInfo['DiseaseInfo'] = isset($result) ? $result : NULL;
     	return $diseaseInfo;
     }
 }
