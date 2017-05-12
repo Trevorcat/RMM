@@ -46,6 +46,7 @@ class ButtonSearchClick extends Controller
             //如果查询结果为空，则返回错误报告
             if ($theDisease['DiseasesInfo']['DiseasesInfo'] == NULL) {
                 $error['code'] = 1;
+            }
                
             return $theDisease;
         }
