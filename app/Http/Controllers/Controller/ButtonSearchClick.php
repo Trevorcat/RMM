@@ -57,7 +57,7 @@ class ButtonSearchClick extends Controller
             $theDisease['DiseasesInfo'] = $this->buttonSearchClick->getTheDisease($post);
             //如果查询结果为空，则返回错误报告
             if ($theDisease['DiseasesInfo']['DiseaseInfo'] == NULL) {
-                $error['code'] = 1;
+                $error['error'] = 1;
                 $error['reason'] = 'Can not search anything by the Filter';
                 return $error;
             }
