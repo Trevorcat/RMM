@@ -31,28 +31,33 @@ class ButtonOkClick extends Controller
         //在接受的请求数据中如果不存在['TunnelInfo']['TunnelId']则返回错误
         if (!isset($post['TunnelInfo']['TunnelId'])) {
             $error['code'] = 1;
-            return $error['reason'] = 'There\'s no \'TunnelInfo => TunnelID\' in POST';
+            $error['reason'] = 'There\'s no \'TunnelInfo => TunnelID\' in POST';
+            return $error;
         }
         //在接受的请求数据中如果不存在['StartMileage']则返回错误
         else if(!isset($post['StartMileage'])){
             $error['code'] = 1;
-            return $error['reason'] = 'There\'s no \'StartMileage\' in POST';
+            $error['reason'] = 'There\'s no \'StartMileage\' in POST';
+            return $error;
         }
         //在接受的请求数据中如果不存在['EndMileage']则返回错误
         else if (!isset($post['EndMileage'])) {
             $error['code'] = 1;
-            return $error['reason'] = 'There\'s no \'EndMileage\' in POST';
+            $error['reason'] = 'There\'s no \'EndMileage\' in POST';
+            return $error;
         }
         //在接受的请求数据中如果不存在['Filter']则返回错误
         else if (!isset($post['Filter'])) {
             $error['code'] = 1;
-            return $error['reason'] = 'There\'s no \'Filter\' in POST';
+            $error['reason'] = 'There\'s no \'Filter\' in POST';
+            return $error;
         }else{
             $theDisease['DiseasesInfo'] = $this->buttonOkClick->getTheDisease($post);
             //如果查询结果为空，则返回错误报告
             if ($theDisease['DiseasesInfo']['DiseaseInfo'] == NULL) {
                 $error['code'] = 1;
-                return $error['reason'] = 'Can not search anything by the Filter';
+                $error['reason'] = 'Can not search anything by the Filter';
+                return $error;
             }
             return $theDisease;
         }

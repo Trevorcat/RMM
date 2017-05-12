@@ -31,21 +31,27 @@ class ButtonSearchClick extends Controller
     	$post = $request->json()->all();
         if (!isset($post['TunnelInfo']['TunnelId'])) {
             $error['error'] = 1;
-            return $error['reason'] = 'There\'s no \'TunnelInfo => TunnelID\' in POST';
+            $error['reason'] = 'There\'s no \'TunnelInfo => TunnelID\' in POST';
+            return $error;
         }else if(!isset($post['StartMileage'])){
             $error['error'] = 1;
-            return $error['reason'] = 'There\'s no \'StartMileage\' in POST';
+            $error['reason'] = 'There\'s no \'StartMileage\' in POST';
+            return $error;
         }else if (!isset($post['EndMileage'])) {
             $error['error'] = 1;
-            return $error['reason'] = 'There\'s no \'EndMileage\' in POST';
+            $error['reason'] = 'There\'s no \'EndMileage\' in POST';
+            return $error;
         }else if (!isset($post['Filter'])) {
             $error['error'] = 1;
-            return $error['reason'] = 'There\'s no \'Filter\' in POST';
+            $error['reason'] = 'There\'s no \'Filter\' in POST';
+            return $error;
         }else{
             $theDisease['DiseasesInfo'] = $this->buttonSearchClick->getTheDisease($post);
             //如果查询结果为空，则返回错误报告
             if ($theDisease['DiseasesInfo']['DiseaseInfo'] == NULL) {
                 $error['code'] = 1;
+                $error['reason'] = 'Can not search anything by the Filter';
+                return $error;
             }
                
             return $theDisease;
