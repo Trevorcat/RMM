@@ -84,11 +84,6 @@ class LoginOnLoadTest extends Controller
                     unset($event->CountofDrop);
                     unset($event->CountofScratch);
                     unset($event->CountofException);
-                    //当事件为已查看状态，则不予返回
-                    // if ($event->IsChecked == 1) {
-                    //     unset($event);
-                    //     continue;
-                    // }
                     $eventInfo['TunnelPicURL'] = $event->PICsFilePath;
                 }
                 $eventInfo['TunnelName'] = $tunnelName;

@@ -46,7 +46,7 @@ class ItemClick extends Controller
         //如果接受的数据不存在['TunnelInfo']['TunnelId']字段，返回错误信息
         if (!isset($post['TunnelInfo']['TunnelId'])) {
             $error['error'] = 1;
-            $error['reason'] = 'There is no \'TunnelId\' in POST'；
+            $error['reason'] = 'There is no \'TunnelId\' in POST';
             return $error;
         }
     	$database = $post['TunnelInfo']['TunnelId'];
