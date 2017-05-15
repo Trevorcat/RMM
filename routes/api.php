@@ -49,6 +49,11 @@ Route::group(['middleware' => ['web']], function () {
 	});
 	Route::post('/loginonload/','Controller\LoginOnLoad@returnEventInfo');
 
+	Route::get('/loginonloadtest/',function(){
+		return 'The API can not be used by the GET method';
+	});
+	Route::post('/loginonloadtest/','Controller\LoginOnLoadTest@returnEventInfo');
+
 	Route::get('/scanslided/',function(){
 		return 'The API can not be used by the GET method';
 	});

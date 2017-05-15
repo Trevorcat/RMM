@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * 版本号 1.1.1.20170506
+ * 作者 陈科杰 
+ * 联系方式 15520446187
+ */
 namespace App\model;
 
 use Illuminate\Database\Eloquent\Model;
@@ -7,8 +12,6 @@ use Illuminate\Support\Facades\Input;
 
 /**
  * 此为AppOnLoad controller 的model
- * @author 陈科杰 15520446187
- * @version 1.1.1.20170506
  */
 
 class appOnLoad extends Model
@@ -24,7 +27,7 @@ class appOnLoad extends Model
      * @var array post 接受request中的json
      *            error 存放错误信息
      *            where 存放查询条件
-     *            data 存放来自数据库请求到的数据
+     * @var stdClass data 存放来自数据库请求到的数据
      *
      * @return    return 存放格式化的数据用于返回
      */
@@ -44,6 +47,10 @@ class appOnLoad extends Model
             $where['OpenId'] = '000000';
             $data = $this->theDatas->getDataByTablenameAndDatabasename('', 'authority', $where,'');
             //遍历得到的数据向返回变量压入数据
+            /**
+             * @var int key 遍历下标
+             * @var stdClass value 遍历到的隧道信息 
+             */
             foreach ($data as $key => $value) {
                 $return['TunnelID'][$key] = $value->TunnelId;
             }

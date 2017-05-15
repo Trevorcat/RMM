@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * 版本号 1.1.1.20170506
+ * 作者 陈科杰 
+ * 联系方式 15520446187
+ */
 namespace App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
@@ -11,12 +16,9 @@ use App\Http\Controllers\Controller;
  * @var array post 存放外部请求的数据
  *      array error 存放错误信息
  *
- * @return array theDisease 存放查询到的结果
+ * @return array theDisease 返回查找到的病害
  *
- * 此接口接受来自外部post请求并接受json数据，将自动整理条件等向数据库请求数据并返回
- *
- * @author 陈科杰 15520446187 admin@trevorscat.com 
- * @version 1.1.1.20170506
+ * 此接口接受来自外部post请求并接受json数据，将自动整理条件等向数据库请求规定返回的数据并返回
  */
 
 class ButtonSearchClick extends Controller

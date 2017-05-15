@@ -15,7 +15,7 @@ use App\Http\Controllers\Controller;
  *
  * 此接口接受来自外部post请求并接受json数据，将自动整理条件等向数据库请求登录加载数据并返回
  */
-class LoginOnLoad extends Controller
+class LoginOnLoadTest extends Controller
 {
     //
     public function __construct(){
