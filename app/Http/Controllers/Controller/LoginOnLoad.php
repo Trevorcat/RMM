@@ -104,7 +104,7 @@ class LoginOnLoad extends Controller
                 foreach ($events as $key => $value) {
                     $nextTime = $key + 1 == count($events) ? strtotime(date("y-m-d")) : strtotime($events[$key + 1]->ExaminationTime);
                     //如果上一次检测时间距今超过一年则视为检测超时
-                    if (ceil(strtotime($nextTime - $value->ExaminationTime)) > 365) {
+                    if (round(($nextTime - strtotime($value->ExaminationTime)) / 3600 / 24) > 365) {
                         $isDely = 1;
                     }
                     $value->IsDely = $isDely;
