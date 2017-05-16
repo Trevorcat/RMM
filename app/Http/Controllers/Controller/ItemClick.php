@@ -37,9 +37,6 @@ class ItemClick extends Controller
      * @return array $TheDiseaseInfo 返回整理好的格式化数据
      *
      * 接受请求数据，自动解析请求数据格式，返回符合条件的数据
-     *
-     * @author 陈科杰 15520446187
-     * @version 1.1.1.20170506
      */
     public function returnDiseaseInfo(Request $request){
         $post = $request->json()->all();

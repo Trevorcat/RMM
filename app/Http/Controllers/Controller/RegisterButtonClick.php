@@ -13,7 +13,7 @@ use App\Http\Controllers\Controller;
 /**
  * @var registerButtonClick register 实例化registerButtonClick 类
  *
- * 此接口接受来自外部post请求并接受json数据，将自动整理条件等向数据库请求数据并返回
+ * 此接口接受来自外部post请求并接受json数据，将自动整理条件等向数据库请求注册码数据进行注册并返回权限
  */ 
 class RegisterButtonClick extends Controller
 {
@@ -29,15 +29,12 @@ class RegisterButtonClick extends Controller
      * @var array   post 存放外部请求的数据
      *              error 存放错误信息
      *              confirm 存放是否在库中存在认证
-     *              company 存放用户所属公司
-     *              authority 存放存数据库中获取的权限
+     * @var string company 存放用户所属公司
+     *             authority 存放存数据库中获取的权限
      *
      * @return array $TunnelID 返回整理好的格式化数据
      *
      * 接受请求数据，自动解析请求数据格式，返回符合条件的数据
-     *
-     * @author 陈科杰 15520446187
-     * @version 1.1.1.20170506
      */
     public function authority(Request $request){
         $post = $request->json()->all();

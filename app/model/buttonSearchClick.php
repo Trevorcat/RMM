@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @var getTheData theDatas 交互数据库的核心类
  * 此为ButtonOkClick controller 的model
  */
-class buttonOkClick extends Model
+class buttonSearchClick extends Model
 {
     /**
      * 构造函数

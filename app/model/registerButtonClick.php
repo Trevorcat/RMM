@@ -116,7 +116,7 @@ class registerButtonClick extends Model
      *
      * @var array where 存放查询条件
      *            post 存放需要使用的数据
-     *            data 存放查询到的权限
+     * @var stdClass data 存放查询到的权限
      *            
      * @return authority 存放查询得到的数据
      *
